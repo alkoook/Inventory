@@ -81,7 +81,6 @@ class Companies extends Component
         }
 
         $this->reset(['name', 'contact_name', 'phone', 'email', 'address', 'is_active', 'selected_id']);
-        $this->dispatch('close-modal');
     }
 
     public function delete($id)

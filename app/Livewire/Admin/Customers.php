@@ -134,7 +134,6 @@ class Customers extends Component
         }
 
         $this->reset(['name', 'email', 'phone', 'address', 'credit_limit', 'password', 'is_active', 'selected_id']);
-        $this->dispatch('close-modal');
     }
 
     public function delete($id)

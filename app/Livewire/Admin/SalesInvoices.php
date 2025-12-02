@@ -41,7 +41,6 @@ class SalesInvoices extends Component
     public function mount()
     {
         $this->invoice_date = now()->format('Y-m-d');
-        $this->addItem();
     }
 
     public function render()
@@ -67,7 +66,7 @@ class SalesInvoices extends Component
     public function create()
     {
         $this->reset(['invoice_id', 'customer_id', 'items', 'total_amount']);
-        $this->invoice_number = 'INV-S-' . strtoupper(Str::random(8));
+        $this->invoice_number = 'INV-' . strtoupper(Str::random(8));
         $this->invoice_date = now()->format('Y-m-d');
         $this->items = [];
         $this->addItem();
@@ -77,10 +76,6 @@ class SalesInvoices extends Component
 
     public function edit($id)
     {
-        // Editing sales invoices is tricky because of stock. 
-        // For simplicity, we might restrict editing or handle stock reversal.
-        // Let's allow editing but be careful.
-        
         $invoice = SalesInvoice::with('items')->findOrFail($id);
         $this->invoice_id = $id;
         $this->customer_id = $invoice->customer_id;
@@ -127,7 +122,7 @@ class SalesInvoices extends Component
         $index = $parts[0];
         $field = $parts[1];
 
-        if ($field === 'product_id') {
+        if ($field === 'product_id' && !empty($value)) {
             $product = Product::find($value);
             if ($product) {
                 $this->items[$index]['unit_price'] = $product->sale_price;
@@ -158,57 +153,62 @@ class SalesInvoices extends Component
         
         $this->validate($rules);
 
-        // Check stock availability for new/updated items
-        // This is complex for edit, so let's simplify: 
-        // If edit: revert old stock, check new stock.
-        
-        if ($this->isEdit) {
-            $invoice = SalesInvoice::with('items')->find($this->invoice_id);
-            foreach ($invoice->items as $item) {
-                $product = Product::find($item->product_id);
-                if ($product) $product->increment('stock', $item->quantity);
-            }
-        }
-
-        // Check stock
+        // Check stock availability
         foreach ($this->items as $item) {
             $product = Product::find($item['product_id']);
-            if (!$product || $product->stock < $item['quantity']) {
-                // Revert stock if we were editing and failed here? 
-                // This is getting transaction-heavy.
-                // For now, just fail validation.
-                $this->addError('items', "الكمية غير متوفرة للمنتج: " . ($product->name ?? ''));
-                
-                // If we reverted stock above, we must re-decrement it if we fail here? 
-                // Ideally use DB transaction.
-                if ($this->isEdit) {
-                     // Re-decrement what we incremented
-                     $invoice = SalesInvoice::with('items')->find($this->invoice_id);
-                     foreach ($invoice->items as $oldItem) {
-                         $p = Product::find($oldItem->product_id);
-                         if ($p) $p->decrement('stock', $oldItem->quantity);
-                     }
+            
+            // If editing, we need to consider the quantity already in the invoice
+            $currentQtyInInvoice = 0;
+            if ($this->isEdit) {
+                $oldItem = SalesInvoiceItem::where('sales_invoice_id', $this->invoice_id)
+                    ->where('product_id', $item['product_id'])
+                    ->first();
+                if ($oldItem) {
+                    $currentQtyInInvoice = $oldItem->quantity;
                 }
+            }
+
+            // Available stock = Current Stock + Qty in Invoice (if edit)
+            $availableStock = $product->stock + $currentQtyInInvoice;
+
+            if ($item['quantity'] > $availableStock) {
+                $this->addError('items', "الكمية غير متوفرة للمنتج: " . $product->name . " (المتوفر: $availableStock)");
                 return;
             }
         }
 
-        $data = [
-            'customer_id' => $this->customer_id,
-            'invoice_number' => $this->invoice_number,
-            'invoice_date' => $this->invoice_date,
-            'total_amount' => $this->total_amount,
-            'status' => 'paid',
-        ];
-
+        // If editing, first restore stock from old items
         if ($this->isEdit) {
-            $invoice = SalesInvoice::find($this->invoice_id);
-            $invoice->update($data);
-            $invoice->items()->delete();
+            $oldInvoice = SalesInvoice::with('items')->find($this->invoice_id);
+            foreach ($oldInvoice->items as $oldItem) {
+                $product = Product::find($oldItem->product_id);
+                if ($product) {
+                    $product->increment('stock', $oldItem->quantity);
+                }
+            }
+            // Delete old items
+            $oldInvoice->items()->delete();
+            
+            // Update invoice
+            $oldInvoice->update([
+                'customer_id' => $this->customer_id,
+                'invoice_number' => $this->invoice_number,
+                'invoice_date' => $this->invoice_date,
+                'total_amount' => $this->total_amount,
+            ]);
+            $invoice = $oldInvoice;
         } else {
-            $invoice = SalesInvoice::create($data);
+            // Create new invoice
+            $invoice = SalesInvoice::create([
+                'customer_id' => $this->customer_id,
+                'invoice_number' => $this->invoice_number,
+                'invoice_date' => $this->invoice_date,
+                'total_amount' => $this->total_amount,
+                'status' => 'approved',
+            ]);
         }
 
+        // Add new items and deduct stock
         foreach ($this->items as $item) {
             $invoice->items()->create([
                 'product_id' => $item['product_id'],
@@ -217,7 +217,6 @@ class SalesInvoices extends Component
                 'total_price' => $item['total_price'],
             ]);
 
-            // Decrement Stock
             $product = Product::find($item['product_id']);
             if ($product) {
                 $product->decrement('stock', $item['quantity']);
@@ -233,7 +232,7 @@ class SalesInvoices extends Component
     {
         $invoice = SalesInvoice::with('items')->find($id);
         if ($invoice) {
-            // Revert stock
+            // Restore stock
             foreach ($invoice->items as $item) {
                 $product = Product::find($item->product_id);
                 if ($product) {

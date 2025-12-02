@@ -1,0 +1,69 @@
+<?php
+
+namespace App\Livewire\Admin;
+
+use App\Models\Setting;
+use Livewire\Component;
+
+class Settings extends Component
+{
+    public $site_name;
+    public $site_email;
+    public $site_phone;
+    public $site_address;
+    public $about_us;
+    
+    // Social Media
+    public $facebook_url;
+    public $twitter_url;
+    public $instagram_url;
+    public $linkedin_url;
+
+    public function mount()
+    {
+        $this->site_name = Setting::get('site_name', 'متجر المخزون');
+        $this->site_email = Setting::get('site_email', 'support@inventory.com');
+        $this->site_phone = Setting::get('site_phone', '+963 912 345 678');
+        $this->site_address = Setting::get('site_address', 'دمشق، سوريا');
+        $this->about_us = Setting::get('about_us', 'نظام متكامل لإدارة المخزون والمبيعات...');
+        
+        $this->facebook_url = Setting::get('facebook_url');
+        $this->twitter_url = Setting::get('twitter_url');
+        $this->instagram_url = Setting::get('instagram_url');
+        $this->linkedin_url = Setting::get('linkedin_url');
+    }
+
+    public function save()
+    {
+        $this->validate([
+            'site_name' => 'required|string|max:255',
+            'site_email' => 'required|email',
+            'site_phone' => 'required|string',
+            'site_address' => 'nullable|string',
+            'about_us' => 'nullable|string',
+            'facebook_url' => 'nullable|url',
+            'twitter_url' => 'nullable|url',
+            'instagram_url' => 'nullable|url',
+            'linkedin_url' => 'nullable|url',
+        ]);
+
+        Setting::set('site_name', $this->site_name);
+        Setting::set('site_email', $this->site_email);
+        Setting::set('site_phone', $this->site_phone);
+        Setting::set('site_address', $this->site_address);
+        Setting::set('about_us', $this->about_us);
+        
+        Setting::set('facebook_url', $this->facebook_url);
+        Setting::set('twitter_url', $this->twitter_url);
+        Setting::set('instagram_url', $this->instagram_url);
+        Setting::set('linkedin_url', $this->linkedin_url);
+
+        session()->flash('message', 'تم حفظ الإعدادات بنجاح.');
+    }
+
+    public function render()
+    {
+        return view('livewire.admin.settings')
+            ->layout('components.layouts.admin', ['header' => 'إعدادات النظام']);
+    }
+}

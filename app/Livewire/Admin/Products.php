@@ -110,7 +110,6 @@ class Products extends Component
         }
 
         $this->reset(['name', 'sku', 'description', 'purchase_price', 'sale_price', 'stock', 'reorder_level', 'category_id', 'company_id', 'is_active', 'selected_id']);
-        $this->dispatch('close-modal');
     }
 
     public function delete($id)
