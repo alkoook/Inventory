@@ -14,6 +14,16 @@ Route::get('/', fn () => redirect()->route('client.catalog'));
 Route::prefix('admin')->name('admin.')->middleware(['web'])->group(function () {
     Route::get('/', Dashboard::class)->name('dashboard');
     Route::get('/categories', Categories::class)->name('categories');
+    Route::get('/products', \App\Livewire\Admin\Products::class)->name('products');
+    Route::get('/companies', \App\Livewire\Admin\Companies::class)->name('companies');
+    Route::get('/customers', \App\Livewire\Admin\Customers::class)->name('customers');
+    Route::get('/invoices', \App\Livewire\Admin\PurchaseInvoices::class)->name('invoices');
+    Route::get('/sales', \App\Livewire\Admin\SalesInvoices::class)->name('sales');
+    Route::get('/orders', \App\Livewire\Admin\Orders::class)->name('orders');
+    Route::get('/logout', function () {
+        auth()->logout();
+        return redirect()->route('client.catalog');
+    })->name('logout');
 });
 
 Route::prefix('client')->name('client.')->middleware(['web'])->group(function () {

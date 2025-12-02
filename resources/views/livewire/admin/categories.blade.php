@@ -1,54 +1,48 @@
 <div>
-    <div class="bg-slate-800 rounded-2xl border border-slate-700 shadow-lg shadow-black/20 overflow-hidden">
-        <div class="p-6 border-b border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="relative w-full sm:w-64">
-                <input wire:model.live="search" type="text" placeholder="بحث عن صنف..." class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded-xl focus:ring-cyan-500 focus:border-cyan-500 block p-2.5 pl-10">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                    </svg>
-                </div>
+    <div class="bg-white rounded-lg border border-slate-200">
+        <div class="p-6 border-b border-slate-200 flex justify-between items-center">
+            <div>
+                <h2 class="text-lg font-bold text-slate-800">الأصناف</h2>
+                <p class="text-sm text-slate-600 mt-1">إدارة أصناف المنتجات</p>
             </div>
-            
-            <button wire:click="create" onclick="document.getElementById('categoryModal').showModal()" class="w-full sm:w-auto text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-300 font-medium rounded-xl text-sm px-5 py-2.5 flex items-center justify-center gap-2 transition-colors">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                إضافة صنف جديد
+            <button wire:click="create" onclick="document.getElementById('categoryModal').showModal()" class="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700">
+                إضافة صنف
             </button>
         </div>
 
+        <div class="p-6 border-b border-slate-200">
+            <input wire:model.live="search" type="text" placeholder="بحث..." class="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500">
+        </div>
+
         <div class="overflow-x-auto">
-            <table class="w-full text-right text-sm text-gray-400">
-                <thead class="bg-slate-900/50 text-xs uppercase text-gray-400">
+            <table class="w-full">
+                <thead class="bg-slate-50 border-b border-slate-200">
                     <tr>
-                        <th scope="col" class="px-6 py-4 font-medium">الاسم</th>
-                        <th scope="col" class="px-6 py-4 font-medium">الوصف</th>
-                        <th scope="col" class="px-6 py-4 font-medium">الحالة</th>
-                        <th scope="col" class="px-6 py-4 font-medium">تاريخ الإضافة</th>
-                        <th scope="col" class="px-6 py-4 font-medium">إجراءات</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">الاسم</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">الوصف</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">الحالة</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">إجراءات</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-700">
+                <tbody class="divide-y divide-slate-200">
                     @forelse($categories as $category)
-                        <tr class="hover:bg-slate-700/50 transition-colors">
-                            <td class="px-6 py-4 font-medium text-white">{{ $category->name }}</td>
-                            <td class="px-6 py-4">{{ Str::limit($category->description, 50) }}</td>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-6 py-4 text-sm font-medium text-slate-800">{{ $category->name }}</td>
+                            <td class="px-6 py-4 text-sm text-slate-600">{{ $category->description ?? '-' }}</td>
                             <td class="px-6 py-4">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $category->is_active ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400' }}">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $category->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
                                     {{ $category->is_active ? 'نشط' : 'غير نشط' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4">{{ $category->created_at->format('Y-m-d') }}</td>
-                            <td class="px-6 py-4 flex gap-3">
-                                <button wire:click="edit({{ $category->id }})" onclick="document.getElementById('categoryModal').showModal()" class="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">تعديل</button>
-                                <button wire:click="delete({{ $category->id }})" wire:confirm="هل أنت متأكد من حذف هذا الصنف؟" class="font-medium text-red-400 hover:text-red-300 transition-colors">حذف</button>
+                            <td class="px-6 py-4 text-sm">
+                                <button wire:click="edit({{ $category->id }})" onclick="document.getElementById('categoryModal').showModal()" class="text-blue-600 hover:text-blue-800 ml-3">تعديل</button>
+                                <button wire:click="delete({{ $category->id }})" wire:confirm="هل أنت متأكد؟" class="text-red-600 hover:text-red-800">حذف</button>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
-                                لا توجد أصناف مضافة حالياً.
+                            <td colspan="4" class="px-6 py-8 text-center text-slate-500">
+                                لا توجد أصناف
                             </td>
                         </tr>
                     @endforelse
@@ -56,47 +50,47 @@
             </table>
         </div>
         
-        <div class="p-4 border-t border-slate-700">
+        <div class="p-4 border-t border-slate-200">
             {{ $categories->links() }}
         </div>
     </div>
 
     <!-- Modal -->
-    <dialog id="categoryModal" class="modal bg-slate-900/80 backdrop-blur-sm fixed inset-0 z-50 w-full h-full flex items-center justify-center p-4" wire:ignore.self>
-        <div class="bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 w-full max-w-md p-6 relative">
-            <h3 class="text-xl font-bold text-white mb-6">
-                {{ $selected_id ? 'تعديل الصنف' : 'إضافة صنف جديد' }}
-            </h3>
+    <dialog id="categoryModal" class="rounded-lg p-0 backdrop:bg-black/50" wire:ignore.self>
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="p-6 border-b border-slate-200">
+                <h3 class="text-lg font-bold text-slate-800">
+                    {{ $selected_id ? 'تعديل الصنف' : 'إضافة صنف جديد' }}
+                </h3>
+            </div>
             
-            <form wire:submit="save" class="space-y-4">
+            <form wire:submit="save" class="p-6 space-y-4">
                 <div>
-                    <label for="name" class="block mb-2 text-sm font-medium text-gray-300">اسم الصنف</label>
-                    <input type="text" id="name" wire:model="name" class="bg-slate-900 border border-slate-600 text-white text-sm rounded-xl focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5" placeholder="مثال: إلكترونيات">
-                    @error('name') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
+                    <label class="block text-sm font-medium text-slate-700 mb-2">اسم الصنف</label>
+                    <input type="text" wire:model="name" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500">
+                    @error('name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
-                    <label for="description" class="block mb-2 text-sm font-medium text-gray-300">الوصف</label>
-                    <textarea id="description" wire:model="description" rows="3" class="bg-slate-900 border border-slate-600 text-white text-sm rounded-xl focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5" placeholder="وصف مختصر للصنف..."></textarea>
-                    @error('description') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
+                    <label class="block text-sm font-medium text-slate-700 mb-2">الوصف</label>
+                    <textarea wire:model="description" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"></textarea>
+                    @error('description') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="flex items-center">
-                    <input id="is_active" type="checkbox" wire:model="is_active" class="w-4 h-4 text-cyan-600 bg-slate-900 border-slate-600 rounded focus:ring-cyan-500 focus:ring-2">
-                    <label for="is_active" class="mr-2 text-sm font-medium text-gray-300">نشط (يظهر في المتجر)</label>
+                    <input type="checkbox" wire:model="is_active" class="w-4 h-4 text-slate-600 border-slate-300 rounded">
+                    <label class="mr-2 text-sm text-slate-700">نشط</label>
                 </div>
 
-                <div class="flex justify-end gap-3 mt-6">
-                    <button type="button" onclick="document.getElementById('categoryModal').close()" class="text-gray-300 bg-slate-700 hover:bg-slate-600 focus:ring-4 focus:outline-none focus:ring-slate-500 font-medium rounded-xl text-sm px-5 py-2.5 text-center transition-colors">إلغاء</button>
-                    <button type="submit" class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-xl text-sm px-5 py-2.5 text-center transition-colors">حفظ</button>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" onclick="document.getElementById('categoryModal').close()" class="px-4 py-2 text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700">
+                        حفظ
+                    </button>
                 </div>
             </form>
-            
-            <button onclick="document.getElementById('categoryModal').close()" class="absolute top-4 left-4 text-gray-400 hover:text-white">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
         </div>
     </dialog>
 
