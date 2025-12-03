@@ -6,40 +6,15 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\SalesInvoice;
 use App\Models\SalesInvoiceItem;
-<<<<<<< HEAD
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\Attributes\Layout;
-
-#[Layout('components.layouts.admin')]
-=======
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 
->>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
 class SalesInvoices extends Component
 {
     use WithPagination;
 
     public $search = '';
-<<<<<<< HEAD
-    public $isOpen = false;
-    public $viewOpen = false;
-    public $selectedInvoice;
-
-    // Form Fields
-    public $customer_id;
-    public $invoice_date;
-    public $notes;
-    public $items = [];
-
-    public function mount()
-    {
-        $this->invoice_date = date('Y-m-d');
-        $this->addItem();
-=======
     public $showModal = false;
     public $isEdit = false;
 
@@ -49,7 +24,7 @@ class SalesInvoices extends Component
     public $invoice_number;
     public $invoice_date;
     public $items = [];
-    
+
     // Computed
     public $total_amount = 0;
 
@@ -106,7 +81,7 @@ class SalesInvoices extends Component
         $this->customer_id = $invoice->customer_id;
         $this->invoice_number = $invoice->invoice_number;
         $this->invoice_date = $invoice->invoice_date->format('Y-m-d');
-        
+
         $this->items = [];
         foreach ($invoice->items as $item) {
             $this->items[] = [
@@ -116,11 +91,10 @@ class SalesInvoices extends Component
                 'total_price' => $item->total_price,
             ];
         }
-        
+
         $this->calculateTotals();
         $this->isEdit = true;
         $this->showModal = true;
->>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
     }
 
     public function addItem()
@@ -129,11 +103,7 @@ class SalesInvoices extends Component
             'product_id' => '',
             'quantity' => 1,
             'unit_price' => 0,
-<<<<<<< HEAD
-            'stock' => 0
-=======
             'total_price' => 0,
->>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
         ];
     }
 
@@ -141,124 +111,14 @@ class SalesInvoices extends Component
     {
         unset($this->items[$index]);
         $this->items = array_values($this->items);
-<<<<<<< HEAD
-=======
         $this->calculateTotals();
->>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
     }
 
     public function updatedItems($value, $key)
     {
         $parts = explode('.', $key);
-<<<<<<< HEAD
-        if (count($parts) === 2 && $parts[1] === 'product_id') {
-            $index = $parts[0];
-            $productId = $value;
-            $product = Product::find($productId);
-            if ($product) {
-                $this->items[$index]['unit_price'] = $product->sale_price;
-                $this->items[$index]['stock'] = $product->stock;
-            }
-        }
-    }
-
-    public function render()
-    {
-        $invoices = SalesInvoice::with('customer')
-            ->whereHas('customer', function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%');
-            })
-            ->orWhere('invoice_number', 'like', '%' . $this->search . '%')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-
-        $customers = Customer::all();
-        $products = Product::where('is_active', true)->get();
-
-        return view('livewire.admin.sales-invoices', [
-            'invoices' => $invoices,
-            'customers' => $customers,
-            'products' => $products,
-        ]);
-    }
-
-    public function create()
-    {
-        $this->resetInputFields();
-        $this->isOpen = true;
-    }
-
-    public function closeModal()
-    {
-        $this->isOpen = false;
-        $this->viewOpen = false;
-        $this->resetInputFields();
-    }
-
-    private function resetInputFields()
-    {
-        $this->customer_id = '';
-        $this->invoice_date = date('Y-m-d');
-        $this->notes = '';
-        $this->items = [];
-        $this->addItem();
-        $this->selectedInvoice = null;
-    }
-
-    public function store()
-    {
-        $this->validate([
-            'customer_id' => 'required',
-            'invoice_date' => 'required|date',
-            'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required',
-            'items.*.quantity' => 'required|numeric|min:1',
-            'items.*.unit_price' => 'required|numeric|min:0',
-        ]);
-
-        DB::transaction(function () {
-            $totalAmount = 0;
-            foreach ($this->items as $item) {
-                $totalAmount += $item['quantity'] * $item['unit_price'];
-            }
-
-            $invoice = SalesInvoice::create([
-                'customer_id' => $this->customer_id,
-                'invoice_number' => 'INV-' . strtoupper(uniqid()),
-                'invoice_date' => $this->invoice_date,
-                'total_amount' => $totalAmount,
-                'status' => 'approved',
-                'notes' => $this->notes,
-            ]);
-
-            foreach ($this->items as $item) {
-                SalesInvoiceItem::create([
-                    'sales_invoice_id' => $invoice->id,
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'],
-                    'total_price' => $item['quantity'] * $item['unit_price'],
-                ]);
-
-                // Decrement Stock
-                $product = Product::find($item['product_id']);
-                if ($product) {
-                    $product->decrement('stock', $item['quantity']);
-                }
-            }
-        });
-
-        session()->flash('message', 'Invoice Created Successfully.');
-        $this->closeModal();
-    }
-
-    public function view($id)
-    {
-        $this->selectedInvoice = SalesInvoice::with(['customer', 'items.product'])->findOrFail($id);
-        $this->viewOpen = true;
-=======
         if (count($parts) < 2) return;
-        
+
         $index = $parts[0];
         $field = $parts[1];
 
@@ -290,25 +150,21 @@ class SalesInvoices extends Component
         if ($this->isEdit) {
             $rules['invoice_number'] = 'required|string|unique:sales_invoices,invoice_number,' . $this->invoice_id;
         }
-        
+
         $this->validate($rules);
 
         // Check stock availability
         foreach ($this->items as $item) {
             $product = Product::find($item['product_id']);
-            
-            // If editing, we need to consider the quantity already in the invoice
+
             $currentQtyInInvoice = 0;
             if ($this->isEdit) {
                 $oldItem = SalesInvoiceItem::where('sales_invoice_id', $this->invoice_id)
                     ->where('product_id', $item['product_id'])
                     ->first();
-                if ($oldItem) {
-                    $currentQtyInInvoice = $oldItem->quantity;
-                }
+                if ($oldItem) $currentQtyInInvoice = $oldItem->quantity;
             }
 
-            // Available stock = Current Stock + Qty in Invoice (if edit)
             $availableStock = $product->stock + $currentQtyInInvoice;
 
             if ($item['quantity'] > $availableStock) {
@@ -317,19 +173,13 @@ class SalesInvoices extends Component
             }
         }
 
-        // If editing, first restore stock from old items
         if ($this->isEdit) {
             $oldInvoice = SalesInvoice::with('items')->find($this->invoice_id);
             foreach ($oldInvoice->items as $oldItem) {
                 $product = Product::find($oldItem->product_id);
-                if ($product) {
-                    $product->increment('stock', $oldItem->quantity);
-                }
+                if ($product) $product->increment('stock', $oldItem->quantity);
             }
-            // Delete old items
             $oldInvoice->items()->delete();
-            
-            // Update invoice
             $oldInvoice->update([
                 'customer_id' => $this->customer_id,
                 'invoice_number' => $this->invoice_number,
@@ -338,7 +188,6 @@ class SalesInvoices extends Component
             ]);
             $invoice = $oldInvoice;
         } else {
-            // Create new invoice
             $invoice = SalesInvoice::create([
                 'customer_id' => $this->customer_id,
                 'invoice_number' => $this->invoice_number,
@@ -348,7 +197,6 @@ class SalesInvoices extends Component
             ]);
         }
 
-        // Add new items and deduct stock
         foreach ($this->items as $item) {
             $invoice->items()->create([
                 'product_id' => $item['product_id'],
@@ -358,33 +206,21 @@ class SalesInvoices extends Component
             ]);
 
             $product = Product::find($item['product_id']);
-            if ($product) {
-                $product->decrement('stock', $item['quantity']);
-            }
+            if ($product) $product->decrement('stock', $item['quantity']);
         }
 
         session()->flash('message', $this->isEdit ? 'تم تحديث الفاتورة بنجاح.' : 'تم إنشاء الفاتورة بنجاح.');
         $this->showModal = false;
         $this->reset(['invoice_id', 'customer_id', 'items', 'total_amount']);
->>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
     }
 
     public function delete($id)
     {
-<<<<<<< HEAD
-        // Optional: Implement delete logic (restore stock?)
-        // For now just delete
-        SalesInvoice::find($id)->delete();
-        session()->flash('message', 'Invoice Deleted Successfully.');
-=======
         $invoice = SalesInvoice::with('items')->find($id);
         if ($invoice) {
-            // Restore stock
             foreach ($invoice->items as $item) {
                 $product = Product::find($item->product_id);
-                if ($product) {
-                    $product->increment('stock', $item->quantity);
-                }
+                if ($product) $product->increment('stock', $item->quantity);
             }
             $invoice->delete();
             session()->flash('message', 'تم حذف الفاتورة واسترجاع المخزون.');
@@ -394,6 +230,5 @@ class SalesInvoices extends Component
     public function closeModal()
     {
         $this->showModal = false;
->>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
     }
 }

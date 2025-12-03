@@ -17,7 +17,6 @@ class SalesInvoiceItem extends Model
         'total_price',
     ];
 
-<<<<<<< HEAD
     protected $casts = [
         'unit_price' => 'decimal:2',
         'total_price' => 'decimal:2',
@@ -26,11 +25,6 @@ class SalesInvoiceItem extends Model
     public function salesInvoice()
     {
         return $this->belongsTo(SalesInvoice::class);
-=======
-    public function invoice()
-    {
-        return $this->belongsTo(SalesInvoice::class, 'sales_invoice_id');
->>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
     }
 
     public function product()

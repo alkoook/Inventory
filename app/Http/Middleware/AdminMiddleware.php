@@ -15,17 +15,12 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-<<<<<<< HEAD
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
-=======
         if (!auth()->check()) {
             return redirect()->route('login');
         }
 
         if (!auth()->user()->isAdmin()) {
             abort(403, 'غير مصرح لك بالوصول إلى هذه الصفحة');
->>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
         }
 
         return $next($request);

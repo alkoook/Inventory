@@ -22,10 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-<<<<<<< HEAD
         'active',
-=======
->>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
     ];
 
     /**
@@ -67,12 +64,6 @@ class User extends Authenticatable
             'active' => 'boolean',
         ];
     }
-
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin';
-    }
-
     public function carts()
     {
         return $this->hasMany(Cart::class);

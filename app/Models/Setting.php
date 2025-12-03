@@ -2,16 +2,11 @@
 
 namespace App\Models;
 
-<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-=======
->>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
 use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
-<<<<<<< HEAD
-=======
     protected $fillable = ['key', 'value', 'group'];
 
     // Helper to get setting by key
@@ -29,5 +24,4 @@ class Setting extends Model
             ['value' => $value, 'group' => $group]
         );
     }
->>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
 }
