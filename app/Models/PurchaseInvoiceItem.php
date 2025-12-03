@@ -7,6 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class PurchaseInvoiceItem extends Model
 {
-    /** @use HasFactory<\Database\Factories\PurchaseInvoiceItemFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'purchase_invoice_id',
+        'product_id',
+        'quantity',
+        'unit_price',
+        'total_price',
+    ];
+
+    protected $casts = [
+        'unit_price' => 'decimal:2',
+        'total_price' => 'decimal:2',
+    ];
+
+    public function purchaseInvoice()
+    {
+        return $this->belongsTo(PurchaseInvoice::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

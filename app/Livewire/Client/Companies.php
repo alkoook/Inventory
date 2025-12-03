@@ -19,6 +19,6 @@ class Companies extends Component
 
         return view('livewire.client.companies', [
             'companies' => $companies,
-        ])->layout('components.layouts.app');
+        ])->layout('components.layouts.client');
     }
 }

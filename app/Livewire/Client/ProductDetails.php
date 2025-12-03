@@ -24,24 +24,36 @@ class ProductDetails extends Component
 
     public function addToCart()
     {
-        $user = Auth::user();
-
-        if ($user === null || $user->role !== 'customer') {
-            // Redirect to login or show error
-            return;
+        // Get or create cart for current session or user
+        if (auth()->check()) {
+            $cart = Cart::firstOrCreate(
+                [
+                    'user_id' => auth()->id(),
+                    'status' => 'draft'
+                ],
+                [
+                    'session_id' => session()->getId(),
+                    'total_amount' => 0
+                ]
+            );
+        } else {
+            $cart = Cart::firstOrCreate(
+                [
+                    'session_id' => session()->getId(),
+                    'status' => 'draft'
+                ],
+                [
+                    'total_amount' => 0
+                ]
+            );
         }
-
-        $cart = Cart::firstOrCreate([
-            'customer_id' => $user->customer->id ?? null,
-            'status' => 'open',
-        ]);
 
         $item = CartItem::firstOrNew([
             'cart_id' => $cart->id,
             'product_id' => $this->product->id,
         ]);
 
-        $item->quantity = $item->quantity + $this->quantity;
+        $item->quantity = ($item->quantity ?? 0) + $this->quantity;
         $item->unit_price = $this->product->sale_price;
         $item->total_price = $item->quantity * $item->unit_price;
         $item->save();
@@ -49,7 +61,6 @@ class ProductDetails extends Component
         $cart->total_amount = $cart->items()->sum('total_price');
         $cart->save();
 
-        $this->dispatch('cart-updated'); // Optional: if we have a cart counter
         session()->flash('message', 'تم إضافة المنتج للسلة بنجاح');
     }
 
@@ -64,6 +75,6 @@ class ProductDetails extends Component
 
         return view('livewire.client.product-details', [
             'relatedProducts' => $relatedProducts,
-        ])->layout('components.layouts.app');
+        ])->layout('components.layouts.client');
     }
 }

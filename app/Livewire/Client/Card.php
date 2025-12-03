@@ -2,62 +2,95 @@
 
 namespace App\Livewire\Client;
 
-use App\Models\Cart;
+use App\Models\Cart as CartModel;
 use App\Models\CartItem;
-use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Card extends Component
 {
-    public function add(int $productId): void
+    public function increment($itemId)
     {
-        $user = Auth::user();
+        $item = CartItem::find($itemId);
+        if ($item) {
+            $item->quantity++;
+            $item->total_price = $item->quantity * $item->unit_price;
+            $item->save();
+            $this->updateCartTotal($item->cart_id);
+        }
+    }
 
-        if ($user === null || $user->role !== 'customer') {
-            return;
+    public function decrement($itemId)
+    {
+        $item = CartItem::find($itemId);
+        if ($item && $item->quantity > 1) {
+            $item->quantity--;
+            $item->total_price = $item->quantity * $item->unit_price;
+            $item->save();
+            $this->updateCartTotal($item->cart_id);
+        }
+    }
+
+    public function remove($itemId)
+    {
+        $item = CartItem::find($itemId);
+        if ($item) {
+            $cartId = $item->cart_id;
+            $item->delete();
+            $this->updateCartTotal($cartId);
+        }
+    }
+
+    protected function updateCartTotal($cartId)
+    {
+        $cart = CartModel::find($cartId);
+        if ($cart) {
+            $cart->total_amount = $cart->items()->sum('total_price');
+            $cart->save();
+        }
+    }
+
+    public function submit()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
         }
 
-        $product = Product::query()
-            ->whereKey($productId)
-            ->where('is_active', true)
-            ->firstOrFail();
+        $cart = $this->getCart();
 
-        $cart = Cart::firstOrCreate([
-            'customer_id' => $user->customer->id ?? null,
-            'status' => 'open',
-        ]);
+        if ($cart && $cart->items()->count() > 0) {
+            $cart->update([
+                'status' => 'submitted',
+                'submitted_at' => now(),
+                'user_id' => Auth::id(), // Ensure user_id is set
+            ]);
 
-        $item = CartItem::firstOrNew([
-            'cart_id' => $cart->id,
-            'product_id' => $product->id,
-        ]);
+            session()->flash('message', 'تم إرسال الطلب للاعتماد بنجاح!');
+            return redirect()->route('client.catalog');
+        }
+    }
 
-        $item->quantity = $item->quantity + 1;
-        $item->unit_price = $product->sale_price;
-        $item->total_price = $item->quantity * $item->unit_price;
-        $item->save();
-
-        $cart->total_amount = $cart->items()->sum('total_price');
-        $cart->save();
+    public function getCart()
+    {
+        if (Auth::check()) {
+            return CartModel::where('user_id', Auth::id())
+                ->where('status', 'draft')
+                ->with('items.product')
+                ->first();
+        } else {
+            return CartModel::where('session_id', session()->getId())
+                ->where('status', 'draft')
+                ->with('items.product')
+                ->first();
+        }
     }
 
     public function render(): \Illuminate\View\View
     {
-        $user = Auth::user();
-
-        $cart = null;
-
-        if ($user !== null && $user->role === 'customer' && $user->customer !== null) {
-            $cart = Cart::query()
-                ->with('items.product')
-                ->where('customer_id', $user->customer->id)
-                ->where('status', 'open')
-                ->first();
-        }
+        $cart = $this->getCart();
 
         return view('livewire.client.card', [
             'cart' => $cart,
-        ])->layout('components.layouts.app');
+        ])->layout('components.layouts.client');
     }
 }

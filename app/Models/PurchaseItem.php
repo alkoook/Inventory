@@ -5,26 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SalesInvoiceItem extends Model
+class PurchaseItem extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'sales_invoice_id',
+        'purchase_id',
         'product_id',
-        'quantity',
-        'unit_price',
-        'total_price',
+        'qty',
+        'cost_price',
+        'total',
     ];
 
     protected $casts = [
-        'unit_price' => 'decimal:2',
-        'total_price' => 'decimal:2',
+        'cost_price' => 'decimal:2',
+        'total' => 'decimal:2',
     ];
 
-    public function salesInvoice()
+    public function purchase()
     {
-        return $this->belongsTo(SalesInvoice::class);
+        return $this->belongsTo(Purchase::class);
     }
 
     public function product()

@@ -7,6 +7,34 @@ use Illuminate\Database\Eloquent\Model;
 
 class SalesInvoice extends Model
 {
-    /** @use HasFactory<\Database\Factories\SalesInvoiceFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'customer_id',
+        'invoice_number',
+        'invoice_date',
+        'total_amount',
+        'cost_amount',
+        'profit_amount',
+        'status',
+        'pdf_path',
+        'notes',
+    ];
+
+    protected $casts = [
+        'invoice_date' => 'date',
+        'total_amount' => 'decimal:2',
+        'cost_amount' => 'decimal:2',
+        'profit_amount' => 'decimal:2',
+    ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(SalesInvoiceItem::class);
+    }
 }
