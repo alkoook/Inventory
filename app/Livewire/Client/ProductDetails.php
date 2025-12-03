@@ -75,6 +75,6 @@ class ProductDetails extends Component
 
         return view('livewire.client.product-details', [
             'relatedProducts' => $relatedProducts,
-        ])->layout('components.layouts.client');
+        ])->layout('components.layouts.app');
     }
 }

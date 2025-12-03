@@ -14,6 +14,6 @@ class About extends Component
         $settings = Setting::first();
         return view('livewire.client.about', [
             'settings' => $settings
-        ]);
+        ])->layout('components.layouts.app');
     }
 }

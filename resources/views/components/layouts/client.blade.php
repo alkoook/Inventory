@@ -34,10 +34,10 @@
                         <a href="{{ route('client.companies') }}" class="px-4 py-2 rounded-lg {{ request()->routeIs('client.companies') || request()->routeIs('client.company.details') ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-700' }} transition-colors">
                             الشركات
                         </a>
-                        <a href="{{ route('client.about') }}" class="px-4 py-2 rounded-lg {{ request()->routeIs('client.about') ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-700' }} transition-colors">
+                        <a href="{{ route('client.about-us') }}" class="px-4 py-2 rounded-lg {{ request()->routeIs('client.about') ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-700' }} transition-colors">
                             من نحن
                         </a>
-                        <a href="{{ route('client.contact') }}" class="px-4 py-2 rounded-lg {{ request()->routeIs('client.contact') ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-700' }} transition-colors">
+                        <a href="{{ route('client.contact-us') }}" class="px-4 py-2 rounded-lg {{ request()->routeIs('client.contact') ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-700' }} transition-colors">
                             تواصل معنا
                         </a>
                     </div>

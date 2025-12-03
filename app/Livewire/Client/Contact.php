@@ -14,6 +14,6 @@ class Contact extends Component
         $settings = Setting::first();
         return view('livewire.client.contact', [
             'settings' => $settings
-        ]);
+        ])->layout('components.layouts.app');
     }
 }

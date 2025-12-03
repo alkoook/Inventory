@@ -13,7 +13,7 @@
         <!-- Categories Grid -->
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             @foreach($categories as $category)
-                <a href="{{ route('client.catalog', ['selectedCategory' => $category->id]) }}" class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition-all duration-300 overflow-hidden flex flex-col items-center p-8 text-center">
+                <a href="{{ route('client.catalog') }}?cat={{ $category->id }}" class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition-all duration-300 overflow-hidden flex flex-col items-center p-8 text-center">
                     <!-- Icon Placeholder -->
                     <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform duration-300">
                         <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -32,6 +32,6 @@ class CompanyDetails extends Component
 
         return view('livewire.client.company-details', [
             'products' => $products,
-        ])->layout('components.layouts.client');
+        ])->layout('components.layouts.app');
     }
 }
