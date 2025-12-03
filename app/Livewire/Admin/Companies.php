@@ -11,20 +11,21 @@ class Companies extends Component
     use WithPagination;
 
     public $name;
-    public $email;
+    public $contact_name;
     public $phone;
+    public $email;
     public $address;
-    public $description;
     public $is_active = true;
+    
     public $selected_id;
     public $search = '';
 
     protected $rules = [
         'name' => 'required|min:3',
+        'contact_name' => 'nullable|string',
+        'phone' => 'nullable|string',
         'email' => 'nullable|email',
-        'phone' => 'nullable',
-        'address' => 'nullable',
-        'description' => 'nullable',
+        'address' => 'nullable|string',
         'is_active' => 'boolean',
     ];
 
@@ -32,18 +33,18 @@ class Companies extends Component
     {
         $companies = Company::query()
             ->where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('email', 'like', '%' . $this->search . '%')
+            ->orWhere('contact_name', 'like', '%' . $this->search . '%')
             ->latest()
             ->paginate(10);
 
         return view('livewire.admin.companies', [
-            'companies' => $companies
+            'companies' => $companies,
         ])->layout('components.layouts.admin', ['header' => 'إدارة الشركات']);
     }
 
     public function create()
     {
-        $this->reset(['name', 'email', 'phone', 'address', 'description', 'is_active', 'selected_id']);
+        $this->reset(['name', 'contact_name', 'phone', 'email', 'address', 'is_active', 'selected_id']);
     }
 
     public function edit($id)
@@ -51,10 +52,10 @@ class Companies extends Component
         $record = Company::findOrFail($id);
         $this->selected_id = $id;
         $this->name = $record->name;
-        $this->email = $record->email;
+        $this->contact_name = $record->contact_name;
         $this->phone = $record->phone;
+        $this->email = $record->email;
         $this->address = $record->address;
-        $this->description = $record->description;
         $this->is_active = $record->is_active;
     }
 
@@ -62,31 +63,24 @@ class Companies extends Component
     {
         $this->validate();
 
+        $data = [
+            'name' => $this->name,
+            'contact_name' => $this->contact_name,
+            'phone' => $this->phone,
+            'email' => $this->email,
+            'address' => $this->address,
+            'is_active' => $this->is_active,
+        ];
+
         if ($this->selected_id) {
-            $record = Company::find($this->selected_id);
-            $record->update([
-                'name' => $this->name,
-                'email' => $this->email,
-                'phone' => $this->phone,
-                'address' => $this->address,
-                'description' => $this->description,
-                'is_active' => $this->is_active,
-            ]);
+            Company::find($this->selected_id)->update($data);
             session()->flash('message', 'تم تحديث بيانات الشركة بنجاح.');
         } else {
-            Company::create([
-                'name' => $this->name,
-                'email' => $this->email,
-                'phone' => $this->phone,
-                'address' => $this->address,
-                'description' => $this->description,
-                'is_active' => $this->is_active,
-            ]);
+            Company::create($data);
             session()->flash('message', 'تم إضافة الشركة بنجاح.');
         }
 
-        $this->reset(['name', 'email', 'phone', 'address', 'description', 'is_active', 'selected_id']);
-        $this->dispatch('close-modal');
+        $this->reset(['name', 'contact_name', 'phone', 'email', 'address', 'is_active', 'selected_id']);
     }
 
     public function delete($id)

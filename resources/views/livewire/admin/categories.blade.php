@@ -1,4 +1,5 @@
 <div>
+<<<<<<< HEAD
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="relative w-full sm:w-64">
@@ -15,10 +16,25 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 إضافة صنف جديد
+=======
+    <div class="bg-white rounded-lg border border-slate-200">
+        <div class="p-6 border-b border-slate-200 flex justify-between items-center">
+            <div>
+                <h2 class="text-lg font-bold text-slate-800">الأصناف</h2>
+                <p class="text-sm text-slate-600 mt-1">إدارة أصناف المنتجات</p>
+            </div>
+            <button wire:click="create" onclick="document.getElementById('categoryModal').showModal()" class="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700">
+                إضافة صنف
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
             </button>
         </div>
 
+        <div class="p-6 border-b border-slate-200">
+            <input wire:model.live="search" type="text" placeholder="بحث..." class="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500">
+        </div>
+
         <div class="overflow-x-auto">
+<<<<<<< HEAD
             <table class="w-full text-right text-sm text-gray-700">
                 <thead class="bg-gray-50 text-xs uppercase text-gray-600 border-b border-gray-200">
                     <tr>
@@ -43,12 +59,36 @@
                             <td class="px-6 py-4 flex gap-3">
                                 <button wire:click="edit({{ $category->id }})" onclick="document.getElementById('categoryModal').showModal()" class="font-medium text-blue-600 hover:text-blue-700 transition-colors">تعديل</button>
                                 <button wire:click="delete({{ $category->id }})" wire:confirm="هل أنت متأكد من حذف هذا الصنف؟" class="font-medium text-red-600 hover:text-red-700 transition-colors">حذف</button>
+=======
+            <table class="w-full">
+                <thead class="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">الاسم</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">الوصف</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">الحالة</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                    @forelse($categories as $category)
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-6 py-4 text-sm font-medium text-slate-800">{{ $category->name }}</td>
+                            <td class="px-6 py-4 text-sm text-slate-600">{{ $category->description ?? '-' }}</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $category->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                    {{ $category->is_active ? 'نشط' : 'غير نشط' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-sm">
+                                <button wire:click="edit({{ $category->id }})" onclick="document.getElementById('categoryModal').showModal()" class="text-blue-600 hover:text-blue-800 ml-3">تعديل</button>
+                                <button wire:click="delete({{ $category->id }})" wire:confirm="هل أنت متأكد؟" class="text-red-600 hover:text-red-800">حذف</button>
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
-                                لا توجد أصناف مضافة حالياً.
+                            <td colspan="4" class="px-6 py-8 text-center text-slate-500">
+                                لا توجد أصناف
                             </td>
                         </tr>
                     @endforelse
@@ -56,20 +96,35 @@
             </table>
         </div>
         
+<<<<<<< HEAD
         <div class="p-4 border-t border-gray-200">
+=======
+        <div class="p-4 border-t border-slate-200">
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
             {{ $categories->links() }}
         </div>
     </div>
 
     <!-- Modal -->
+<<<<<<< HEAD
     <dialog id="categoryModal" class="modal bg-gray-900/50 backdrop-blur-sm fixed inset-0 z-50 w-full h-full flex items-center justify-center p-4" wire:ignore.self>
         <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md p-6 relative">
             <h3 class="text-xl font-bold text-gray-900 mb-6">
                 {{ $selected_id ? 'تعديل الصنف' : 'إضافة صنف جديد' }}
             </h3>
+=======
+    <dialog id="categoryModal" class="rounded-lg p-0 backdrop:bg-black/50" wire:ignore.self>
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="p-6 border-b border-slate-200">
+                <h3 class="text-lg font-bold text-slate-800">
+                    {{ $selected_id ? 'تعديل الصنف' : 'إضافة صنف جديد' }}
+                </h3>
+            </div>
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
             
-            <form wire:submit="save" class="space-y-4">
+            <form wire:submit="save" class="p-6 space-y-4">
                 <div>
+<<<<<<< HEAD
                     <label for="name" class="block mb-2 text-sm font-medium text-gray-700">اسم الصنف</label>
                     <input type="text" id="name" wire:model="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="مثال: إلكترونيات">
                     @error('name') <span class="text-red-600 text-xs mt-1">{{ $message }}</span> @enderror
@@ -97,6 +152,33 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
+=======
+                    <label class="block text-sm font-medium text-slate-700 mb-2">اسم الصنف</label>
+                    <input type="text" wire:model="name" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500">
+                    @error('name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">الوصف</label>
+                    <textarea wire:model="description" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"></textarea>
+                    @error('description') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="flex items-center">
+                    <input type="checkbox" wire:model="is_active" class="w-4 h-4 text-slate-600 border-slate-300 rounded">
+                    <label class="mr-2 text-sm text-slate-700">نشط</label>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" onclick="document.getElementById('categoryModal').close()" class="px-4 py-2 text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700">
+                        حفظ
+                    </button>
+                </div>
+            </form>
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
         </div>
     </dialog>
 

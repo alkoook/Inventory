@@ -17,11 +17,14 @@ class CartItem extends Model
         'total_price',
     ];
 
+<<<<<<< HEAD
     protected $casts = [
         'unit_price' => 'decimal:2',
         'total_price' => 'decimal:2',
     ];
 
+=======
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
     public function cart()
     {
         return $this->belongsTo(Cart::class);
@@ -29,6 +32,10 @@ class CartItem extends Model
 
     public function product()
     {
+<<<<<<< HEAD
         return $this->belongsTo(\App\Models\Product::class);
+=======
+        return $this->belongsTo(Product::class);
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
     }
 }

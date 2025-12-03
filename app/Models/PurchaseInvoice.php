@@ -22,9 +22,12 @@ class PurchaseInvoice extends Model
 
     protected $casts = [
         'invoice_date' => 'date',
+<<<<<<< HEAD
         'total_amount' => 'decimal:2',
         'paid_amount' => 'decimal:2',
         'remaining_amount' => 'decimal:2',
+=======
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
     ];
 
     public function company()

@@ -1,4 +1,5 @@
 <div>
+<<<<<<< HEAD
     @if (session()->has('message'))
         <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl">
             {{ session('message') }}
@@ -22,8 +23,16 @@
                 </svg>
                 إضافة شركة جديدة
             </button>
+=======
+    <!-- Flash Messages -->
+    @if (session()->has('message'))
+        <div class="mb-4 bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg">
+            {{ session('message') }}
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
         </div>
+    @endif
 
+<<<<<<< HEAD
         <div class="overflow-x-auto">
             <table class="w-full text-right text-sm text-gray-700">
                 <thead class="bg-gray-50 text-xs uppercase text-gray-600 border-b border-gray-200">
@@ -128,12 +137,201 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
+=======
+    <!-- Header with Search and Add Button -->
+    <div class="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+        <div class="flex-1 w-full sm:w-auto">
+            <input 
+                type="text" 
+                wire:model.live="search" 
+                placeholder="البحث عن شركة..."
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
         </div>
-    </dialog>
+        <button 
+            wire:click="create"
+            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition flex items-center justify-center gap-2"
+        >
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            إضافة شركة جديدة
+        </button>
+    </div>
 
-    <script>
-        window.addEventListener('close-modal', event => {
-            document.getElementById('companyModal').close();
-        })
-    </script>
+    <!-- Companies Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">اسم الشركة</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">جهة الاتصال</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">معلومات الاتصال</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">الحالة</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-200">
+                @forelse ($companies as $company)
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-slate-900">{{ $company->name }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-slate-900">{{ $company->contact_name ?? '-' }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-slate-900">{{ $company->phone ?? '-' }}</div>
+                            <div class="text-sm text-slate-500">{{ $company->email ?? '-' }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if ($company->is_active)
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    نشط
+                                </span>
+                            @else
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    غير نشط
+                                </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex gap-2">
+                                <button 
+                                    wire:click="edit({{ $company->id }})"
+                                    class="text-blue-600 hover:text-blue-900 transition"
+                                >
+                                    تعديل
+                                </button>
+                                <button 
+                                    wire:click="delete({{ $company->id }})"
+                                    wire:confirm="هل أنت متأكد من حذف هذه الشركة؟"
+                                    class="text-red-600 hover:text-red-900 transition"
+                                >
+                                    حذف
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+                            لا توجد شركات
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-4">
+        {{ $companies->links() }}
+    </div>
+
+    <!-- Modal -->
+    @if ($selected_id !== null || $name !== null)
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-6 border-b border-slate-200">
+                    <h3 class="text-lg font-semibold text-slate-900">
+                        {{ $selected_id ? 'تعديل بيانات الشركة' : 'إضافة شركة جديدة' }}
+                    </h3>
+                    <button wire:click="$set('selected_id', null); $set('name', null)" class="text-slate-400 hover:text-slate-600">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <form wire:submit="save" class="p-6 space-y-4">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-slate-700 mb-2">اسم الشركة</label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            wire:model="name"
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                        @error('name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label for="contact_name" class="block text-sm font-medium text-slate-700 mb-2">اسم المسؤول</label>
+                        <input 
+                            type="text" 
+                            id="contact_name" 
+                            wire:model="contact_name"
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                        @error('contact_name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-slate-700 mb-2">رقم الهاتف</label>
+                            <input 
+                                type="text" 
+                                id="phone" 
+                                wire:model="phone"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                            @error('phone') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-slate-700 mb-2">البريد الإلكتروني</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                wire:model="email"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                            @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-slate-700 mb-2">العنوان</label>
+                        <textarea 
+                            id="address" 
+                            wire:model="address" 
+                            rows="2"
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        ></textarea>
+                        @error('address') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="flex items-center">
+                        <input 
+                            id="is_active" 
+                            type="checkbox" 
+                            wire:model="is_active"
+                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                        >
+                        <label for="is_active" class="mr-2 text-sm font-medium text-slate-700">نشط</label>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="flex gap-3 pt-4">
+                        <button 
+                            type="submit"
+                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition"
+                        >
+                            {{ $selected_id ? 'تحديث' : 'إضافة' }}
+                        </button>
+                        <button 
+                            type="button"
+                            wire:click="$set('selected_id', null); $set('name', null)"
+                            class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium transition"
+                        >
+                            إلغاء
+                        </button>
+                    </div>
+                </form>
+            </div>
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
+        </div>
+    @endif
 </div>

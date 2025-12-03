@@ -11,6 +11,7 @@ class Cart extends Model
     use HasFactory;
 
     protected $fillable = [
+<<<<<<< HEAD
         'user_id',
         'session_id',
         'total_amount',
@@ -30,12 +31,23 @@ class Cart extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+=======
+        'customer_id',
+        'status',
+        'total_amount',
+    ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
     }
 
     public function items()
     {
         return $this->hasMany(CartItem::class);
     }
+<<<<<<< HEAD
 
     public function approver()
     {
@@ -46,4 +58,6 @@ class Cart extends Model
     {
         return $this->hasOne(Order::class);
     }
+=======
+>>>>>>> 07d468d8af2e220903f1160b2f1d5d84afb5fd1d
 }
