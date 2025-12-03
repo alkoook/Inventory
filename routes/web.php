@@ -27,7 +27,7 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'admin'])->group(func
     Route::get('/orders', \App\Livewire\Admin\Orders::class)->name('orders');
     Route::get('/settings', \App\Livewire\Admin\Settings::class)->name('settings');
     Route::get('/users', \App\Livewire\Admin\Users::class)->name('users');
-    Route::get('/logout', function () {
+    Route::post('/logout', function () {
         auth()->logout();
         return redirect()->route('login');
     })->name('logout');
