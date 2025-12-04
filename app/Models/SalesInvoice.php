@@ -10,7 +10,7 @@ class SalesInvoice extends Model
     use HasFactory;
 
     protected $fillable = [
-        'customer_id',
+        'user_id',
         'invoice_number',
         'invoice_date',
         'total_amount',
@@ -28,9 +28,9 @@ class SalesInvoice extends Model
         'profit_amount' => 'decimal:2',
     ];
 
-    public function customer()
+    public function user()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(User::class);
     }
 
     public function items()

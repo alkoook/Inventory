@@ -2,169 +2,213 @@
 
 namespace App\Livewire\Admin\SalesInvoices;
 
-use App\Models\SalesInvoice;
-use App\Models\SalesInvoiceItem;
 use App\Models\Customer;
 use App\Models\Product;
-use App\Models\InventoryTransaction;
+use App\Models\Invoice; // نفترض وجود نموذج الفاتورة
+use App\Models\SalesInvoice;
 use App\Models\User;
 use Livewire\Component;
-use Illuminate\Validation\ValidationException;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth; // تم إضافة هذا
 
 class Create extends Component
 {
-    public $customer_id = '';
+    // === 1. خصائص بيانات الفاتورة الأساسية ===
+    public $user_id;
+    public $customer_name; // يُستخدم للبحث عبر datalist
     public $invoice_date;
-    public $notes = '';
-
+    public $notes;
+    
+    // === 2. مصفوفة الأصناف (Invoice Items) ===
+    // تمت إضافة 'cost_price' هنا ليتم استخدامه في الحسابات
+    // تحتوي على: product_id, product_search, quantity, unit_price, cost_price
     public $items = [];
+
+    // === 3. بيانات العرض (Lookups) ===
+    public $customers = [];
+    public $products = [];
+    public $search_customer_term = ''; // لا يستخدم هنا، لكن يتم استخدامه ضمن دالة البحث
+
+    // === 4. خصائص الحالة ===
+    public $total_amount = 0.00;
+    public $cost_amount = 0.00; // خصائص جديدة
+    public $profit_amount = 0.00; // خصائص جديدة
+
 
     public function mount()
     {
-        $this->invoice_date = now()->format('Y-m-d');
+        // تهيئة التاريخ الافتراضي
+        $this->invoice_date = Carbon::today()->toDateString();
+        
+        // جلب قائمة العملاء والمنتجات الأولية (للعرض في datalist)
+        // يجب أن يحتوي Product على سعر التكلفة (cost_price)
+        $this->customers = User::select('id', 'name')->get();
+        $this->products = Product::select('id', 'name', 'sku', 'sale_price', 'purchase_price')->get(); // تم إضافة cost_price
+
+        // إضافة صنف افتراضي واحد عند التحميل
         $this->addItem();
     }
 
     protected function rules()
     {
         return [
-            'customer_id' => 'required|exists:customers,id',
+            'user_id' => 'required|exists:users,id',
             'invoice_date' => 'required|date',
+            'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.quantity' => 'required|numeric|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
         ];
     }
+    
+    /**
+     * تحديث المنطق عند تغيير أي حقل.
+     * يستخدم لمزامنة customer_id عند اختيار العميل من datalist.
+     */
+    public function updated($property, $value)
+    {
+        // 1. تحديد Customer ID من Customer Name
+        if ($property === 'customer_name') {
+            $customer = $this->customers->firstWhere('name', $value);
+            $this->user_id = $customer ? $customer->id : null;
+        }
 
+        // 2. تحديث Total Amount و Cost Amount عند تغيير الكمية أو السعر
+        if (preg_match('/items\.(\d+)\.(quantity|unit_price)/', $property)) {
+            $this->calculateTotal();
+        }
+
+        // 3. مزامنة بيانات المنتج عند البحث
+        if (preg_match('/items\.(\d+)\.product_search/', $property, $matches)) {
+            $index = $matches[1];
+            $search_term = $this->items[$index]['product_search'];
+            
+            // محاولة استخراج ID من القيمة (إذا كانت تحتوي على اسم المنتج و SKU)
+            $product_data = explode('—', $search_term);
+            $product_name = trim($product_data[0]);
+
+            $product = $this->products->first(function ($p) use ($product_name) {
+                return $p->name === $product_name;
+            });
+            
+            if ($product) {
+                $this->items[$index]['product_id'] = $product->id;
+                // تحديث سعر الوحدة تلقائياً من سعر البيع للمنتج
+                $this->items[$index]['unit_price'] = $product->sale_price;
+                // تحديث سعر التكلفة للحسابات
+                $this->items[$index]['cost_price'] = $product->cost_price ?? 0; // إضافة cost_price
+                $this->calculateTotal();
+            } else {
+                $this->items[$index]['product_id'] = null;
+                $this->items[$index]['cost_price'] = 0;
+            }
+        }
+    }
+
+    /**
+     * حساب إجمالي الفاتورة وتكلفة البضاعة المباعة والربح
+     */
+    public function calculateTotal()
+    {
+        $total = 0;
+        $cost = 0;
+        foreach ($this->items as $item) {
+            $quantity = (float)($item['quantity'] ?? 0);
+            $price = (float)($item['unit_price'] ?? 0);
+            $item_cost = (float)($item['cost_price'] ?? 0); // جلب سعر التكلفة
+            
+            $total += $quantity * $price;
+            $cost += $quantity * $item_cost;
+        }
+        
+        $this->total_amount = round($total, 2);
+        $this->cost_amount = round($cost, 2); // حفظ إجمالي التكلفة
+        $this->profit_amount = round($this->total_amount - $this->cost_amount, 2); // حساب الربح
+    }
+
+
+    /**
+     * إضافة صنف جديد فارغ إلى مصفوفة $items
+     */
     public function addItem()
     {
         $this->items[] = [
-            'product_id' => '',
+            'product_id' => null,
+            'product_search' => '',
             'quantity' => 1,
-            'unit_price' => 0,
+            'unit_price' => 0.00,
+            'purchase_price' => 0.00, // تمت إضافة الحقل
         ];
+        $this->calculateTotal();
     }
 
+    /**
+     * حذف صنف من مصفوفة $items بناءً على الـ index
+     */
     public function removeItem($index)
     {
         unset($this->items[$index]);
-        $this->items = array_values($this->items);
+        $this->items = array_values($this->items); // إعادة ترتيب المفاتيح بعد الحذف
+        $this->calculateTotal();
     }
 
-    public function updatedItems($value, $key)
-    {
-        // إذا المستخدم غيّر المنتج
-        if (str_contains($key, 'product_id')) {
-
-            $index = explode('.', $key)[0];
-            $productId = $this->items[$index]['product_id'];
-
-            // منع التكرار
-            if ($productId && collect($this->items)->pluck('product_id')->duplicates()->isNotEmpty()) {
-                $this->items[$index]['product_id'] = '';
-                throw ValidationException::withMessages([
-                    "items.$index.product_id" => "لا يمكنك اختيار نفس المنتج أكثر من مرة."
-                ]);
-            }
-
-            // جلب السعر تلقائياً
-            $product = Product::find($productId);
-            if ($product) {
-                $this->items[$index]['unit_price'] = $product->sale_price;
-            }
-        }
-    }
-
+    /**
+     * حفظ الفاتورة وأصنافها
+     */
     public function save()
     {
+        // التأكد من أن الإجمالي محدّث قبل التحقق
+        $this->calculateTotal();
+        
         $this->validate();
 
-        // تأكيد عدم التكرار
-        $duplicate = collect($this->items)->groupBy('product_id')
-            ->filter(fn ($g) => $g->count() > 1);
-
-        if($duplicate->isNotEmpty()) {
-            throw ValidationException::withMessages([
-                'items' => 'المنتجات المكررة غير مسموحة.'
-            ]);
-        }
-
-        // التحقق من المخزون
-        foreach ($this->items as $index => $item) {
-            $product = Product::find($item['product_id']);
-
-            if ($product->stock < $item['quantity']) {
-                throw ValidationException::withMessages([
-                    "items.$index.quantity" => "الكمية المطلوبة غير متوفرة، المتاح: {$product->stock}."
+        try {
+            DB::transaction(function () {
+                // 1. إنشاء الفاتورة الرئيسية
+                $invoice = SalesInvoice::create([
+                    'user_id' => $this->user_id,
+                    'invoice_date' => $this->invoice_date,
+                    'invoice_number' =>"INV_".now()->format('YmdHis'), 
+                    'total_amount' => $this->total_amount, 
+                    'cost_amount' => $this->cost_amount, // تم إضافة حقل تكلفة البضاعة
+                    'profit_amount' => $this->profit_amount, // تم إضافة حقل الربح
+                    'status' => 'approved', // تعيين القيمة الافتراضية 'approved'
+                    'notes' => $this->notes,
                 ]);
-            }
+
+                // 2. حفظ أصناف الفاتورة
+                // foreach ($this->items as $itemData) {
+                //     $invoice->items()->create([ // نفترض وجود علاقة items() في نموذج Invoice
+                //         'sales_invoice_id'=>$invoice->id,
+                //         'product_id' => $itemData['product_id'],
+                //         'quantity' => $itemData['quantity'],
+                //         'unit_price' => $itemData['unit_price'], // حفظ سعر التكلفة على مستوى الصنف
+                //     ]);
+                // }
+          
+
+            session()->flash('message', 'تم إنشاء فاتورة المبيعات بنجاح!');
+            
+            // إعادة توجيه المستخدم أو إعادة تعيين النموذج
+            $this->redirect(route('admin.sales-invoices.index'), navigate: true);
+  });
+        } catch (\Exception $e) {
+  dd($e);
+
+            session()->flash('error', 'حدث خطأ أثناء حفظ الفاتورة: ' . $e->getMessage());
+            // يمكنك استخدام log::error هنا
         }
-
-        // حساب الإجمالي
-        $total = collect($this->items)
-            ->sum(fn($i) => $i['quantity'] * $i['unit_price']);
-
-        // إنشاء فاتورة
-        $invoice = SalesInvoice::create([
-            'customer_id'    => $this->customer_id,
-            'invoice_number' => 'INV-' . now()->format('YmdHis'),
-            'invoice_date'   => $this->invoice_date,
-            'total_amount'   => $total,
-            'cost_amount'    => 0,
-            'profit_amount'  => 0,
-            'status'         => 'approved',
-            'notes'          => $this->notes,
-        ]);
-
-        // إنشاء العناصر + خصم المخزون + تخزين الحركة
-        foreach ($this->items as $item) {
-            $product = Product::find($item['product_id']);
-
-            // حفظ عنصر الفاتورة
-            SalesInvoiceItem::create([
-                'sales_invoice_id' => $invoice->id,
-                'product_id'       => $product->id,
-                'quantity'         => $item['quantity'],
-                'unit_price'       => $item['unit_price'],
-                'total_price'      => $item['quantity'] * $item['unit_price'],
-            ]);
-
-            // خصم المخزون
-            $product->decrement('stock', $item['quantity']);
-
-            // تسجيل حركة المخزون
-            InventoryTransaction::createTransaction(
-                $product->id,
-                'sale',
-                $item['quantity'],
-                SalesInvoice::class,
-                $invoice->id,
-                'بيع - فاتورة: ' . $invoice->invoice_number
-            );
-        }
-
-        session()->flash('message', 'تم إنشاء الفاتورة بنجاح.');
-        return redirect()->route('admin.sales-invoices.index');
     }
+
 
     public function render()
     {
+        // تمرير البيانات اللازمة للـ View
         return view('livewire.admin.sales-invoices.create', [
-            'customers' => User::role('customer')->get(),
-            'products'  => Product::where('stock', '>', 0)->get(),
-        ])->layout('components.layouts.admin', [
-            'header' => 'إنشاء فاتورة مبيعات'
-        ]);
+            'customers' => $this->customers,
+            'products' => $this->products, // المنتجات تحتاج إلى تمرير لـ datalist
+        ])->layout('components.layouts.admin', ['header' => 'إنشاء فاتورة مبيعات']);
     }
-    protected $listeners = [
-    'update-product' => 'setProduct',
-];
-
-public function setProduct($data)
-{
-    $this->items[$data['index']]['product_id'] = $data['product_id'];
-}
-
 }

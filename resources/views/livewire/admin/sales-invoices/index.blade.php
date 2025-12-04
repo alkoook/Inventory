@@ -23,7 +23,7 @@
                 @forelse($invoices as $invoice)
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 font-medium">{{ $invoice->invoice_number }}</td>
-                        <td class="px-6 py-4">{{ $invoice->customer->name }}</td>
+                        <td class="px-6 py-4">{{ $invoice->user->name ?? '—' }}</td>
                         <td class="px-6 py-4">{{ $invoice->invoice_date }}</td>
                         <td class="px-6 py-4 font-semibold text-green-600">${{ number_format($invoice->total_amount, 2) }}</td>
                         <td class="px-6 py-4 flex gap-3">

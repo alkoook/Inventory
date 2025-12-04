@@ -97,10 +97,7 @@
 
     @livewireStyles
 
-    {{-- TomSelect CSS --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css">
 
-    @stack('styles')
 
 </head>
 <body class="bg-primary-50 text-dark-text antialiased">
@@ -335,41 +332,10 @@
     </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
-    <script>
-        function initTomSelects() {
-
-            // Products
-            document.querySelectorAll('.product-select').forEach((el) => {
-                if (!el.tomselect) {
-                    new TomSelect(el, {
-                        placeholder: "ابحث عن منتج...",
-                        maxItems: 1,
-                        allowEmptyOption: true,
-                    });
-                }
-            });
-
-            // Customers
-            document.querySelectorAll('.customer-select').forEach((el) => {
-                if (!el.tomselect) {
-                    new TomSelect(el, {
-                        placeholder: "ابحث عن زبون...",
-                        maxItems: 1,
-                        allowEmptyOption: true,
-                    });
-                }
-            });
-        }
-
-        document.addEventListener('livewire:load', initTomSelects);
-        document.addEventListener('livewire:update', initTomSelects);
-    </script>
 
     @livewireScripts
 
-    @stack('scripts')
     <script>
         // Get references to the sidebar and backdrop elements
         const sidebar = document.getElementById('sidebar');

@@ -14,7 +14,7 @@ class Index extends Component
 
     public function render()
     {
-        $invoices = SalesInvoice::with('customer')
+        $invoices = SalesInvoice::with('user')
             ->where('invoice_number', 'like', '%' . $this->search . '%')
             ->latest()
             ->paginate(10);
