@@ -11,7 +11,6 @@ class Login extends Component
 {
     public $email = '';
     public $password = '';
-    public $remember = false;
 
     protected $rules = [
         'email' => 'required|email',
@@ -29,16 +28,23 @@ class Login extends Component
     {
         $this->validate();
 
-        if (Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        // تذكّر المستخدم معطل حالياً، فنستخدم false كقيمة ثابتة
+        if (Auth::attempt(['email' => $this->email, 'password' => $this->password], false)) {
             session()->regenerate();
 
-            // Redirect based on user role
             $user = Auth::user();
-            if ($user->role === 'admin') {
+
+            // باستخدام Spatie Roles
+            if ($user->hasRole('admin')) {
                 return redirect()->route('admin.dashboard');
-            } else {
+            }
+
+            if ($user->hasRole('customer')) {
                 return redirect()->route('client.catalog');
             }
+
+            // لو ما عنده رول معروف، رجّعه على صفحة عامة أو صفحة خطأ
+            return redirect()->route('client.catalog');
         }
 
         $this->addError('email', 'بيانات الدخول غير صحيحة.');

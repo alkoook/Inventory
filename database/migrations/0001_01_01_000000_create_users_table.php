@@ -13,13 +13,22 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
+            // معلومات المستخدم الأساسية
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'customer'])->default('admin');
+
+            // معلومات إضافية حسب طلبك
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable();
+            $table->string('national_id')->nullable();
+
+
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes(); // أضفناه لأنك تستخدمه بباقي الجداول
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained( 'users')->cascadeOnUpdate()->restrictOnDelete();
             $table->enum('status', ['open', 'submitted', 'approved', 'rejected'])->default('open');
             $table->decimal('total_amount', 15, 2)->default(0);
             $table->timestamps();

@@ -39,4 +39,25 @@ class Product extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function inventoryTransactions()
+    {
+        return $this->hasMany(InventoryTransaction::class);
+    }
+
+    /**
+     * Get current stock from inventory transactions
+     */
+    public function getCurrentStock()
+    {
+        return $this->inventoryTransactions()
+            ->selectRaw('
+                SUM(CASE 
+                    WHEN transaction_type IN ("purchase", "return_sale", "adjustment") THEN quantity
+                    WHEN transaction_type IN ("sale", "return_purchase") THEN -quantity
+                    ELSE 0
+                END) as total_stock
+            ')
+            ->value('total_stock') ?? 0;
+    }
 }

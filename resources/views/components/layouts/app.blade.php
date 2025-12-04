@@ -84,13 +84,13 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                 </svg>
                             </div>
-                            <span class="font-bold text-2xl text-slate-900 tracking-tight">متجر<span class="text-primary">المخزون</span></span>
+                            <span class="font-bold text-2xl text-slate-900 tracking-tight"><span class="text-primary">{{ Setting::get('site_name') }}</span></span>
                         </a>
 
                         <!-- روابط سطح المكتب -->
                         <div class="flex items-center gap-8 h-full">
-                            <a href="{{ route('client.catalog') }}" class="nav-link text-base font-bold text-slate-700 hover:text-primary transition-colors active">الرئيسية</a>
-                            <a href="{{ route('client.catalog') }}" class="nav-link text-base font-bold text-slate-700 hover:text-primary transition-colors">المنتجات</a>
+                            <a href="{{ route('client.catalog') }}" class="nav-link text-base font-bold text-slate-700 hover:text-primary transition-colors">الرئيسية</a>
+                            <a href="{{ route('client.products') }}" class="nav-link text-base font-bold text-slate-700 hover:text-primary transition-colors">المنتجات</a>
                             <a href="{{ route('client.categories') }}" class="nav-link text-base font-bold text-slate-700 hover:text-primary transition-colors">الأصناف</a>
                             <a href="{{ route('client.companies') }}" class="nav-link text-base font-bold text-slate-700 hover:text-primary transition-colors">الشركات</a>
                             <a href="{{ route('client.about-us') }}" class="nav-link text-base font-bold text-slate-700 hover:text-primary transition-colors">من نحن</a>
@@ -189,7 +189,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                 </svg>
                             </div>
-                            <span class="font-bold text-xl text-slate-900">متجر المخزون</span>
+                            <span class="font-bold text-xl text-slate-900"> {{ Setting::get('site_name') }}</span>
                         </div>
                         <p class="text-slate-500 text-sm leading-relaxed max-w-md">
                             {{ Setting::get('about_us', 'نظام متكامل لإدارة المخزون والمبيعات، يوفر لك تجربة تسوق سلسة وسهلة.') }}

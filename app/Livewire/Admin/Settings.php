@@ -32,13 +32,9 @@ class Settings extends Component
         $this->instagram_url = Setting::get('instagram_url');
         $this->linkedin_url  = Setting::get('linkedin_url');
     }
-public function kok(){
-    dd('kok');
-}
+
     public function save()
     {
-        dd('kok');
-
         $this->validate([
             'site_name'     => 'nullable|string|max:255',
             'site_email'    => 'nullable|email',
