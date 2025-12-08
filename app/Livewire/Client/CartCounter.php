@@ -3,7 +3,6 @@
 namespace App\Livewire\Client;
 
 use App\Models\Cart;
-use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -22,19 +21,12 @@ class CartCounter extends Component
     {
         $user = Auth::user();
         
-        if (!$user || $user->role !== 'customer') {
+        if (!$user || !$user->hasRole('customer')) {
             $this->itemCount = 0;
             return;
         }
 
-        $customer = Customer::where('user_id', $user->id)->first();
-        
-        if (!$customer) {
-            $this->itemCount = 0;
-            return;
-        }
-
-        $cart = Cart::where('customer_id', $customer->id)
+        $cart = Cart::where('user_id', $user->id)
             ->where('status', 'open')
             ->first();
 

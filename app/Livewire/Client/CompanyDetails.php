@@ -16,8 +16,8 @@ class CompanyDetails extends Component
     public function mount(Company $company)
     {
         $this->company = $company;
-        
-        if (!$this->company->is_active) {
+
+        if (! $this->company->is_active) {
             abort(404);
         }
     }
@@ -32,6 +32,6 @@ class CompanyDetails extends Component
 
         return view('livewire.client.company-details', [
             'products' => $products,
-        ])->layout('components.layouts.app');
+        ])->layout('components.layouts.client');
     }
 }

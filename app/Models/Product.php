@@ -17,6 +17,8 @@ class Product extends Model
         'name',
         'sku',
         'description',
+        'image',
+        'unit_of_measure',
         'purchase_price',
         'sale_price',
         'stock',
@@ -30,8 +32,8 @@ class Product extends Model
         'is_active' => 'boolean',
     ];
 
-
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 

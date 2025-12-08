@@ -2,18 +2,17 @@
 
 namespace App\Livewire\Client;
 
+use App\Models\Cart;
+use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\Company;
 use App\Models\Product;
-use App\Models\Cart;
-use App\Models\CartItem;
-use App\Models\Customer;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Url;
 
 class Catalog extends Component
 {
@@ -31,10 +30,49 @@ class Catalog extends Component
     #[Url(as: 'sort')]
     public $sortBy = 'latest';
 
-    public function updatingSearch() { $this->resetPage(); }
-    public function updatingSelectedCategory() { $this->resetPage(); }
-    public function updatingSelectedCompany() { $this->resetPage(); }
-    public function updatingSortBy() { $this->resetPage(); }
+    public array $quantities = [];
+
+    public function mount()
+    {
+        // Initialize quantities will be done in render
+    }
+
+    public function increment($productId)
+    {
+        $product = Product::find($productId);
+        if ($product && isset($this->quantities[$productId]) && $this->quantities[$productId] < $product->stock) {
+            $this->quantities[$productId]++;
+        } elseif ($product && !isset($this->quantities[$productId])) {
+            $this->quantities[$productId] = 1;
+        }
+    }
+
+    public function decrement($productId)
+    {
+        if (isset($this->quantities[$productId]) && $this->quantities[$productId] > 1) {
+            $this->quantities[$productId]--;
+        }
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSelectedCategory()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSelectedCompany()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSortBy()
+    {
+        $this->resetPage();
+    }
 
     public function clearFilters()
     {
@@ -46,30 +84,36 @@ class Catalog extends Component
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return $this->redirect(route('login'), navigate: true);
         }
 
-        if ($user->role !== 'customer') {
+        if (! $user->hasRole('customer')) {
             session()->flash('error', 'هذه الميزة متاحة للزبائن فقط');
+
             return;
         }
 
         $product = Product::find($productId);
-        if (!$product || $product->stock <= 0) {
+        if (! $product || $product->stock <= 0) {
             session()->flash('error', 'المنتج غير متوفر');
+
             return;
         }
 
-        $customer = Customer::firstOrCreate(
-            ['user_id' => $user->id],
-            ['name' => $user->name, 'email' => $user->email, 'is_active' => true]
-        );
+        $quantity = $this->quantities[$productId] ?? 1;
 
-        DB::transaction(function () use ($customer, $product) {
+        if ($quantity > $product->stock) {
+            session()->flash('error', 'الكمية المطلوبة تتجاوز المخزون المتاح');
+            return;
+        }
+
+        DB::transaction(function () use ($user, $product, $quantity) {
             $cart = Cart::firstOrCreate([
-                'customer_id' => $customer->id,
+                'user_id' => $user->id,
                 'status' => 'open',
+            ], [
+                'session_id' => session()->getId(),
             ]);
 
             $cartItem = CartItem::where('cart_id', $cart->id)
@@ -77,22 +121,28 @@ class Catalog extends Component
                 ->first();
 
             if ($cartItem) {
-                if ($cartItem->quantity < $product->stock) {
-                    $cartItem->increment('quantity');
-                    $cartItem->update(['total_price' => $cartItem->quantity * $cartItem->unit_price]);
+                $newQuantity = $cartItem->quantity + $quantity;
+                if ($newQuantity > $product->stock) {
+                    session()->flash('error', 'الكمية الإجمالية تتجاوز المخزون المتاح');
+                    return;
                 }
+                $cartItem->quantity = $newQuantity;
+                $cartItem->update(['total_price' => $cartItem->quantity * $cartItem->unit_price]);
             } else {
                 CartItem::create([
                     'cart_id' => $cart->id,
                     'product_id' => $product->id,
-                    'quantity' => 1,
+                    'quantity' => $quantity,
                     'unit_price' => $product->sale_price,
-                    'total_price' => $product->sale_price,
+                    'total_price' => $quantity * $product->sale_price,
                 ]);
             }
 
             $cart->update(['total_amount' => $cart->items()->sum('total_price')]);
         });
+
+        // Reset quantity after adding
+        $this->quantities[$productId] = 1;
 
         $this->dispatch('cart-updated');
         session()->flash('success', 'تمت الإضافة للسلة');
@@ -107,10 +157,10 @@ class Catalog extends Component
         $productsQuery = Product::where('is_active', true)->with(['category', 'company']);
 
         if ($this->search) {
-            $productsQuery->where(function($q) {
+            $productsQuery->where(function ($q) {
                 $q->where('name', 'like', '%'.$this->search.'%')
-                  ->orWhere('description', 'like', '%'.$this->search.'%')
-                  ->orWhere('sku', 'like', '%'.$this->search.'%');
+                    ->orWhere('description', 'like', '%'.$this->search.'%')
+                    ->orWhere('sku', 'like', '%'.$this->search.'%');
             });
         }
 
@@ -123,20 +173,32 @@ class Catalog extends Component
         }
 
         switch ($this->sortBy) {
-            case 'price_asc': $productsQuery->orderBy('sale_price', 'asc'); break;
-            case 'price_desc': $productsQuery->orderBy('sale_price', 'desc'); break;
-            case 'name_asc': $productsQuery->orderBy('name', 'asc'); break;
-            case 'name_desc': $productsQuery->orderBy('name', 'desc'); break;
-            case 'latest': default: $productsQuery->latest(); break;
+            case 'price_asc': $productsQuery->orderBy('sale_price', 'asc');
+                break;
+            case 'price_desc': $productsQuery->orderBy('sale_price', 'desc');
+                break;
+            case 'name_asc': $productsQuery->orderBy('name', 'asc');
+                break;
+            case 'name_desc': $productsQuery->orderBy('name', 'desc');
+                break;
+            case 'latest': default: $productsQuery->latest();
+                break;
         }
 
         $products = $productsQuery->paginate(12);
+
+        // Initialize quantities for products that don't have one
+        foreach ($products as $product) {
+            if (!isset($this->quantities[$product->id])) {
+                $this->quantities[$product->id] = 1;
+            }
+        }
 
         return view('livewire.client.catalog', [
             'categories' => $categories,
             'companies' => $companies,
             'products' => $products,
             'settings' => $settings,
-        ])->layout('components.layouts.app');
+        ])->layout('components.layouts.client');
     }
 }

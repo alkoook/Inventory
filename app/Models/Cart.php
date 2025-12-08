@@ -10,7 +10,6 @@ class Cart extends Model
     use HasFactory;
 
     protected $fillable = [
-        'customer_id',
         'user_id',
         'session_id',
         'status',
@@ -27,10 +26,6 @@ class Cart extends Model
         'approved_at' => 'datetime',
     ];
 
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class);
-    }
 
     public function user()
     {

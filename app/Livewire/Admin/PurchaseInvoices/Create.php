@@ -2,18 +2,21 @@
 
 namespace App\Livewire\Admin\PurchaseInvoices;
 
+use App\Models\Company;
+use App\Models\InventoryTransaction;
+use App\Models\Product;
 use App\Models\PurchaseInvoice;
 use App\Models\PurchaseInvoiceItem;
-use App\Models\Company;
-use App\Models\Product;
-use App\Models\InventoryTransaction;
 use Livewire\Component;
 
 class Create extends Component
 {
     public $company_id = '';
+
     public $invoice_date;
+
     public $notes = '';
+
     public $items = [];
 
     protected $rules = [
@@ -22,6 +25,7 @@ class Create extends Component
         'items' => 'required|array|min:1',
         'items.*.product_id' => 'required|exists:products,id',
         'items.*.quantity' => 'required|integer|min:1',
+        'items.*.unit_of_measure' => 'required|in:غرام,كيلو,قطعة,علبة,كيس,ظرف,تنكة',
         'items.*.unit_price' => 'required|numeric|min:0',
     ];
 
@@ -33,7 +37,7 @@ class Create extends Component
 
     public function addItem()
     {
-        $this->items[] = ['product_id' => '', 'quantity' => 1, 'unit_price' => 0];
+        $this->items[] = ['product_id' => '', 'quantity' => 1, 'unit_of_measure' => 'قطعة', 'unit_price' => 0];
     }
 
     public function removeItem($index)
@@ -57,13 +61,13 @@ class Create extends Component
     {
         $this->validate();
 
-        $totalAmount = collect($this->items)->sum(function($item) {
+        $totalAmount = collect($this->items)->sum(function ($item) {
             return $item['quantity'] * $item['unit_price'];
         });
 
         $invoice = PurchaseInvoice::create([
             'company_id' => $this->company_id,
-            'invoice_number' => 'PINV-' . time(),
+            'invoice_number' => 'PINV-'.time(),
             'invoice_date' => $this->invoice_date,
             'total_amount' => $totalAmount,
             'notes' => $this->notes,
@@ -74,6 +78,7 @@ class Create extends Component
                 'purchase_invoice_id' => $invoice->id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
+                'unit_of_measure' => $item['unit_of_measure'] ?? 'قطعة',
                 'unit_price' => $item['unit_price'],
                 'total_price' => $item['quantity'] * $item['unit_price'],
             ]);
@@ -84,11 +89,12 @@ class Create extends Component
                 $item['quantity'],
                 'App\Models\PurchaseInvoice',
                 $invoice->id,
-                'شراء - فاتورة: ' . $invoice->invoice_number
+                'شراء - فاتورة: '.$invoice->invoice_number
             );
         }
 
         session()->flash('message', 'تم إنشاء الفاتورة بنجاح.');
+
         return redirect()->route('admin.purchase-invoices.index');
     }
 

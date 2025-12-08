@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('sku')->unique();
             $table->text('description')->nullable();
+            $table->string('image')->nullable();
+            $table->enum('unit_of_measure', ['غرام', 'كيلو', 'قطعة', 'علبة', 'كيس', 'ظرف', 'تنكة'])->default('قطعة');
             $table->decimal('purchase_price', 15, 2);
             $table->decimal('sale_price', 15, 2);
             $table->integer('stock')->default(0);

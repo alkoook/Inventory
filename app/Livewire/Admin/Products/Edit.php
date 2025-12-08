@@ -6,10 +6,14 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Company;
 use App\Models\InventoryTransaction;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Edit extends Component
 {
+    use WithFileUploads;
+
     public $productId;
     public $name = '';
     public $sku = '';
@@ -21,6 +25,8 @@ class Edit extends Component
     public $reorder_level = 0;
     public $description = '';
     public $oldStock = 0;
+    public $image;
+    public $oldImage;
 
     public function mount($id)
     {
@@ -36,6 +42,7 @@ class Edit extends Component
         $this->oldStock = $product->stock;
         $this->reorder_level = $product->reorder_level;
         $this->description = $product->description;
+        $this->oldImage = $product->image;
     }
 
     protected function rules()
@@ -50,6 +57,7 @@ class Edit extends Component
             'stock' => 'required|integer|min:0',
             'reorder_level' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|max:2048',
         ];
     }
 
@@ -58,6 +66,16 @@ class Edit extends Component
         $this->validate();
 
         $product = Product::findOrFail($this->productId);
+        
+        // Handle image upload
+        $imagePath = $this->oldImage;
+        if ($this->image) {
+            // Delete old image if exists
+            if ($this->oldImage && Storage::disk('public')->exists($this->oldImage)) {
+                Storage::disk('public')->delete($this->oldImage);
+            }
+            $imagePath = $this->image->store('products', 'public');
+        }
         
         // Check if stock changed
         if ($this->stock != $this->oldStock) {
@@ -83,6 +101,7 @@ class Edit extends Component
             'stock' => $this->stock,
             'reorder_level' => $this->reorder_level,
             'description' => $this->description,
+            'image' => $imagePath,
         ]);
 
         session()->flash('message', 'تم تحديث المنتج بنجاح.');

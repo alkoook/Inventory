@@ -11,6 +11,7 @@ class SalesInvoice extends Model
 
     protected $fillable = [
         'user_id',
+        'customer_user_id',
         'invoice_number',
         'invoice_date',
         'total_amount',
@@ -31,6 +32,11 @@ class SalesInvoice extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_user_id');
     }
 
     public function items()

@@ -18,6 +18,7 @@ class Settings extends Component
     public $twitter_url;
     public $instagram_url;
     public $linkedin_url;
+    public $whatsapp_number;
 
     public function mount()
     {
@@ -31,6 +32,7 @@ class Settings extends Component
         $this->twitter_url   = Setting::get('twitter_url');
         $this->instagram_url = Setting::get('instagram_url');
         $this->linkedin_url  = Setting::get('linkedin_url');
+        $this->whatsapp_number  = Setting::get('whatsapp_number');
     }
 
     public function save()
@@ -45,6 +47,7 @@ class Settings extends Component
             'twitter_url'   => 'nullable|url',
             'instagram_url' => 'nullable|url',
             'linkedin_url'  => 'nullable|url',
+            'whatsapp_number'  => 'nullable|string',
         ]);
 
         Setting::set('site_name', $this->site_name);
@@ -57,6 +60,7 @@ class Settings extends Component
         Setting::set('twitter_url', $this->twitter_url, 'social');
         Setting::set('instagram_url', $this->instagram_url, 'social');
         Setting::set('linkedin_url', $this->linkedin_url, 'social');
+        Setting::set('whatsapp_number', $this->whatsapp_number, 'social');
 
         session()->flash('message', 'تم حفظ الإعدادات بنجاح.');
     }

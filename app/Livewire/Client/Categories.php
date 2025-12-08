@@ -12,10 +12,13 @@ class Categories extends Component
 
     public function render()
     {
-        $categories = Category::withCount('products')->paginate(12);
+        $categories = Category::where('is_active', true)
+            ->withCount('products')
+            ->orderBy('name')
+            ->get();
 
         return view('livewire.client.categories', [
-            'categories' => $categories
-        ])->layout('components.layouts.app', ['title' => 'الأصناف - متجر المخزون']);
+            'categories' => $categories,
+        ])->layout('components.layouts.client', ['title' => 'الأصناف - متجر المخزون']);
     }
 }

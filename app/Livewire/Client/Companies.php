@@ -12,13 +12,12 @@ class Companies extends Component
 
     public function render()
     {
-        $companies = Company::query()
-            ->where('is_active', true)
+        $companies = Company::where('is_active', true)
             ->orderBy('name')
-            ->paginate(12);
+            ->get();
 
         return view('livewire.client.companies', [
             'companies' => $companies,
-        ])->layout('components.layouts.app');
+        ])->layout('components.layouts.client');
     }
 }

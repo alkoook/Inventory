@@ -1,44 +1,46 @@
 <div>
-    <div class="max-w-3xl mx-auto bg-white rounded-2xl border p-6">
-        <h2 class="text-2xl font-bold mb-6">فاتورة مبيعات #{{ $invoice->invoice_number }}</h2>
+    <div class="max-w-3xl mx-auto bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-xl p-6" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.1);">
+        <h2 class="text-2xl font-bold mb-6 text-gray-100">فاتورة مبيعات #{{ $invoice->invoice_number }}</h2>
         
-        <div class="mb-6 grid grid-cols-2 gap-4 text-sm">
-            <div><strong>الزبون:</strong> {{ $invoice->customer->name }}</div>
-            <div><strong>التاريخ:</strong> {{ $invoice->invoice_date }}</div>
+        <div class="mb-6 grid grid-cols-2 gap-4 text-sm text-gray-300">
+            <div><strong class="text-gray-400">الزبون:</strong> {{ $invoice->customer->name ?? $invoice->user->name ?? '—' }}</div>
+            <div><strong class="text-gray-400">التاريخ:</strong> {{ $invoice->invoice_date }}</div>
             @if($invoice->notes)
-                <div class="col-span-2"><strong>ملاحظات:</strong> {{ $invoice->notes }}</div>
+                <div class="col-span-2"><strong class="text-gray-400">ملاحظات:</strong> {{ $invoice->notes }}</div>
             @endif
         </div>
 
-        <table class="w-full mb-6 text-sm">
-            <thead class="bg-gray-50">
+        <table class="w-full mb-6 text-sm text-gray-300">
+            <thead class="bg-slate-800/50 border-b border-slate-700/50">
                 <tr>
-                    <th class="px-4 py-2 text-right">المنتج</th>
-                    <th class="px-4 py-2 text-right">الكمية</th>
-                    <th class="px-4 py-2 text-right">السعر</th>
-                    <th class="px-4 py-2 text-right">المجموع</th>
+                    <th class="px-4 py-2 text-right text-gray-400 font-semibold">المنتج</th>
+                    <th class="px-4 py-2 text-right text-gray-400 font-semibold">الكمية</th>
+                    <th class="px-4 py-2 text-right text-gray-400 font-semibold">وحدة القياس</th>
+                    <th class="px-4 py-2 text-right text-gray-400 font-semibold">السعر</th>
+                    <th class="px-4 py-2 text-right text-gray-400 font-semibold">المجموع</th>
                 </tr>
             </thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-slate-700/50">
                 @foreach($invoice->items as $item)
-                    <tr>
-                        <td class="px-4 py-2">{{ $item->product->name }}</td>
-                        <td class="px-4 py-2">{{ $item->quantity }}</td>
-                        <td class="px-4 py-2">${{ number_format($item->unit_price, 2) }}</td>
-                        <td class="px-4 py-2 font-semibold">${{ number_format($item->total_price, 2) }}</td>
+                    <tr class="hover:bg-slate-700/30 transition-colors">
+                        <td class="px-4 py-2 text-gray-100">{{ $item->product->name }}</td>
+                        <td class="px-4 py-2 text-gray-300">{{ $item->quantity }}</td>
+                        <td class="px-4 py-2 text-gray-300">{{ $item->unit_of_measure ?? 'قطعة' }}</td>
+                        <td class="px-4 py-2 text-gray-300">${{ number_format($item->unit_price, 2) }}</td>
+                        <td class="px-4 py-2 font-semibold text-gray-100">${{ number_format($item->total_price, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
-            <tfoot class="bg-gray-50 font-bold">
+            <tfoot class="bg-slate-800/50 font-bold border-t border-slate-700/50">
                 <tr>
-                    <td colspan="3" class="px-4 py-2 text-right">المجموع الكلي:</td>
-                    <td class="px-4 py-2 text-right text-green-600">${{ number_format($invoice->total_amount, 2) }}</td>
+                    <td colspan="4" class="px-4 py-2 text-right text-gray-300">المجموع الكلي:</td>
+                    <td class="px-4 py-2 text-right text-green-400">${{ number_format($invoice->total_amount, 2) }}</td>
                 </tr>
             </tfoot>
         </table>
 
         <div class="flex justify-end">
-            <a href="{{ route('admin.sales-invoices.index') }}" class="bg-gray-100 px-5 py-2.5 rounded-xl">رجوع</a>
+            <a href="{{ route('admin.sales-invoices.index') }}" class="bg-slate-700/50 hover:bg-slate-700 text-gray-300 px-5 py-2.5 rounded-xl transition-colors">رجوع</a>
         </div>
     </div>
 </div>

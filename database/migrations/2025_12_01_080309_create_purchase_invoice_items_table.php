@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('purchase_invoice_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->integer('quantity');
+            $table->enum('unit_of_measure', ['غرام', 'كيلو', 'قطعة', 'علبة', 'كيس', 'ظرف', 'تنكة'])->default('قطعة');
             $table->decimal('unit_price', 15, 2);
             $table->decimal('total_price', 15, 2);
             $table->timestamps();

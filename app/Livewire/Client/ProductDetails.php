@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class ProductDetails extends Component
@@ -16,52 +17,88 @@ class ProductDetails extends Component
     public function mount(Product $product)
     {
         $this->product = $product;
-        
-        if (!$this->product->is_active) {
+
+        if (! $this->product->is_active) {
             abort(404);
+        }
+    }
+
+    public function increment()
+    {
+        if ($this->quantity < $this->product->stock) {
+            $this->quantity++;
+        }
+    }
+
+    public function decrement()
+    {
+        if ($this->quantity > 1) {
+            $this->quantity--;
         }
     }
 
     public function addToCart()
     {
-        // Get or create cart for current session or user
-        if (auth()->check()) {
-            $cart = Cart::firstOrCreate(
-                [
-                    'user_id' => auth()->id(),
-                    'status' => 'draft'
-                ],
-                [
-                    'session_id' => session()->getId(),
-                    'total_amount' => 0
-                ]
-            );
-        } else {
-            $cart = Cart::firstOrCreate(
-                [
-                    'session_id' => session()->getId(),
-                    'status' => 'draft'
-                ],
-                [
-                    'total_amount' => 0
-                ]
-            );
+        $user = Auth::user();
+
+        if (! $user) {
+            session()->flash('error', 'يجب تسجيل الدخول أولاً');
+            return $this->redirect(route('login'), navigate: true);
         }
 
-        $item = CartItem::firstOrNew([
-            'cart_id' => $cart->id,
-            'product_id' => $this->product->id,
-        ]);
+        // Check if user has customer role using Spatie permissions
+        if (! $user->hasRole('customer')) {
+            session()->flash('error', 'هذه الميزة متاحة للزبائن فقط');
+            return;
+        }
 
-        $item->quantity = ($item->quantity ?? 0) + $this->quantity;
-        $item->unit_price = $this->product->sale_price;
-        $item->total_price = $item->quantity * $item->unit_price;
-        $item->save();
+        if ($this->product->stock <= 0) {
+            session()->flash('error', 'المنتج غير متوفر في المخزون');
+            return;
+        }
 
-        $cart->total_amount = $cart->items()->sum('total_price');
-        $cart->save();
+        if ($this->quantity > $this->product->stock) {
+            session()->flash('error', 'الكمية المطلوبة تتجاوز المخزون المتاح');
+            return;
+        }
 
-        session()->flash('message', 'تم إضافة المنتج للسلة بنجاح');
+        try {
+            DB::transaction(function () use ($user) {
+                $cart = Cart::firstOrCreate([
+                    'user_id' => $user->id,
+                    'status' => 'open',
+                ], [
+                    'session_id' => session()->getId(),
+                    'total_amount' => 0,
+                ]);
+
+                $item = CartItem::firstOrNew([
+                    'cart_id' => $cart->id,
+                    'product_id' => $this->product->id,
+                ]);
+
+                $newQuantity = ($item->quantity ?? 0) + $this->quantity;
+                
+                if ($newQuantity > $this->product->stock) {
+                    session()->flash('error', 'الكمية الإجمالية تتجاوز المخزون المتاح');
+                    return;
+                }
+
+                $item->quantity = $newQuantity;
+                $item->unit_price = $this->product->sale_price;
+                $item->total_price = $item->quantity * $item->unit_price;
+                $item->save();
+
+                $cart->total_amount = $cart->items()->sum('total_price');
+                $cart->save();
+            });
+
+            $this->dispatch('cart-updated');
+            session()->flash('message', 'تم إضافة المنتج للسلة بنجاح');
+            $this->quantity = 1; // Reset quantity
+        } catch (\Exception $e) {
+            session()->flash('error', 'حدث خطأ أثناء إضافة المنتج للسلة');
+        }
     }
 
     public function render()
@@ -75,6 +112,6 @@ class ProductDetails extends Component
 
         return view('livewire.client.product-details', [
             'relatedProducts' => $relatedProducts,
-        ])->layout('components.layouts.app');
+        ])->layout('components.layouts.client');
     }
 }

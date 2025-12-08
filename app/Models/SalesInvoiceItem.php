@@ -13,6 +13,7 @@ class SalesInvoiceItem extends Model
         'sales_invoice_id',
         'product_id',
         'quantity',
+        'unit_of_measure',
         'unit_price',
         'total_price',
     ];

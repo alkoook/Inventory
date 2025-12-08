@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class EnsureUserIsCustomer
 {
     /**
      * Handle an incoming request.
@@ -19,10 +19,10 @@ class AdminMiddleware
             return redirect()->route('login');
         }
 
-        if (!auth()->user()->hasRole('admin')) {
-            // Redirect customer to client pages
-            if (auth()->user()->hasRole('customer')) {
-                return redirect()->route('client.catalog');
+        if (!auth()->user()->hasRole('customer')) {
+            // Redirect admin to admin pages
+            if (auth()->user()->hasRole('admin')) {
+                return redirect()->route('admin.dashboard');
             }
             abort(403, 'غير مصرح لك بالوصول إلى هذه الصفحة');
         }

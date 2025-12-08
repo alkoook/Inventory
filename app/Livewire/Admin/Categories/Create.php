@@ -4,17 +4,22 @@ namespace App\Livewire\Admin\Categories;
 
 use App\Models\Category;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Create extends Component
 {
+    use WithFileUploads;
+
     public $name = '';
     public $description = '';
     public $is_active = true;
+    public $image;
 
     protected $rules = [
         'name' => 'required|min:3|unique:categories,name',
         'description' => 'nullable|string',
         'is_active' => 'boolean',
+        'image' => 'nullable|image|max:2048',
     ];
 
     protected $messages = [
@@ -27,10 +32,16 @@ class Create extends Component
     {
         $this->validate();
 
+        $imagePath = null;
+        if ($this->image) {
+            $imagePath = $this->image->store('categories', 'public');
+        }
+
         Category::create([
             'name' => $this->name,
             'description' => $this->description,
             'is_active' => $this->is_active,
+            'image' => $imagePath,
         ]);
 
         session()->flash('message', 'تم إضافة الصنف بنجاح.');

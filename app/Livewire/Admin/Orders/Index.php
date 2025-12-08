@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Admin\Orders;
 
-use App\Models\Order;
+use App\Models\Cart;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -14,9 +14,9 @@ class Index extends Component
 
     public function render()
     {
-        $orders = Order::with('customer')
-            ->where('status', 'pending')
-            ->latest()
+        $orders = Cart::with(['user', 'items.product'])
+            ->where('status', 'submitted')
+            ->latest('submitted_at')
             ->paginate(10);
 
         return view('livewire.admin.orders.index', [

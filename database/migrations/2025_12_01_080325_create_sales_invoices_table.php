@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('sales_invoices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained( 'users')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('customer_user_id')->nullable()->constrained('users')->nullOnDelete()->comment('User with role customer');
             $table->string('invoice_number')->unique();
             $table->date('invoice_date')->nullable();
             $table->decimal('total_amount', 15, 2)->default(0);

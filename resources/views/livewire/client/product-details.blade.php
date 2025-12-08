@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-red-50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Breadcrumbs -->
@@ -26,22 +26,28 @@
         <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
                 <!-- Product Image -->
-                <div class="relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden aspect-square group border border-gray-200 shadow-inner">
-                    <div class="absolute inset-0 flex items-center justify-center text-gray-400">
-                        <svg class="w-32 h-32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                    </div>
+                <div class="relative bg-gradient-to-br from-blue-50 to-red-50 rounded-2xl overflow-hidden aspect-square group border-2 border-blue-200 shadow-lg">
+                    @if($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" 
+                             alt="{{ $product->name }}"
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    @else
+                        <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-100 to-red-100">
+                            <svg class="w-32 h-32 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                    @endif
                     <!-- Stock Badge -->
                     @if($product->stock > 0)
-                        <div class="absolute top-4 right-4 bg-green-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+                        <div class="absolute top-4 right-4 bg-gradient-to-r from-green-500 to-green-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                             </svg>
                             متوفر ({{ $product->stock }})
                         </div>
                     @else
-                        <div class="absolute top-4 right-4 bg-red-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg">
+                        <div class="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg">
                             غير متوفر
                         </div>
                     @endif
@@ -61,18 +67,18 @@
                     
                     <!-- Category Badge -->
                     @if($product->category)
-                        <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 mb-3 w-fit px-3 py-1 bg-gray-100 rounded-full">
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold text-red-600 mb-3 w-fit px-3 py-1 bg-red-50 rounded-full border border-red-200">
                             {{ $product->category->name }}
                         </span>
                     @endif
                     
-                    <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ $product->name }}</h1>
+                    <h1 class="text-4xl font-bold text-slate-900 mb-4">{{ $product->name }}</h1>
                     
                     <!-- SKU -->
-                    <p class="text-sm text-gray-500 mb-4">رمز المنتج: <span class="font-mono">{{ $product->sku }}</span></p>
+                    <p class="text-sm text-slate-600 mb-4">رمز المنتج: <span class="font-mono text-slate-800">{{ $product->sku }}</span></p>
                     
                     <!-- Price -->
-                    <div class="flex items-baseline gap-2 mb-6 p-4 bg-blue-50 rounded-xl border-2 border-blue-100 w-fit">
+                    <div class="flex items-baseline gap-2 mb-6 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200 w-fit">
                         <span class="text-4xl font-bold text-blue-600">{{ number_format($product->sale_price, 0) }}</span>
                         <span class="text-xl text-blue-600">ر.س</span>
                     </div>
@@ -91,34 +97,67 @@
                         </div>
                     @endif
 
-                    <!-- Add to Cart Section -->
-                    <div class="flex items-center gap-4">
-                        <div class="w-36">
-                            <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">الكمية</label>
-                            <div class="relative flex items-center">
-                                <button type="button" wire:click="decrement" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-r-xl p-3 h-12 focus:ring-blue-500 focus:ring-2 focus:outline-none text-gray-700 transition-colors">
-                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
-                                    </svg>
-                                </button>
-                                <input type="text" id="quantity" wire:model="quantity" class="bg-white border-x-0 border-y border-gray-300 h-12 text-center text-gray-900 text-base font-semibold focus:ring-blue-500 focus:border-blue-500 block w-full" required>
-                                <button type="button" wire:click="increment" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-l-xl p-3 h-12 focus:ring-blue-500 focus:ring-2 focus:outline-none text-gray-700 transition-colors">
-                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                                    </svg>
-                                </button>
-                            </div>
+                    @if (session()->has('error'))
+                        <div class="mb-4 p-4 rounded-xl bg-red-50 text-red-700 border-2 border-red-200 text-sm flex items-center gap-2">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ session('error') }}
                         </div>
-                        
-                        <div class="flex-1">
-                            <label class="block text-sm font-medium text-gray-700 mb-2 opacity-0">-</label>
-                            <button wire:click="addToCart" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    @endif
+
+                    <!-- Add to Cart Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <!-- زر الناقص (-) -->
+                            <button 
+                                type="button" 
+                                wire:click="decrement"
+                                @if($quantity <= 1) disabled @endif
+                                class="w-14 h-14 bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 disabled:hover:scale-100">
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
                                 </svg>
-                                إضافة للسلة
+                            </button>
+                            
+                            <!-- حقل الكمية -->
+                            <div class="flex-1 flex flex-col items-center">
+                                <input 
+                                    type="number" 
+                                    id="quantity" 
+                                    wire:model.live="quantity"
+                                    min="1"
+                                    max="{{ $product->stock }}"
+                                    class="w-full h-14 text-center text-3xl font-bold text-blue-600 bg-white border-2 border-blue-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-lg"
+                                    required>
+                                <span class="text-xs text-gray-500 mt-1">من أصل {{ $product->stock }} متوفر</span>
+                            </div>
+                            
+                            <!-- زر الزيادة (+) -->
+                            <button 
+                                type="button" 
+                                wire:click="increment"
+                                @if($quantity >= $product->stock) disabled @endif
+                                class="w-14 h-14 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 disabled:hover:scale-100">
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                </svg>
                             </button>
                         </div>
+                        
+                        <button 
+                            wire:click="addToCart"
+                            @if($product->stock <= 0) disabled @endif
+                            class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 text-lg">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            @if($product->stock > 0)
+                                إضافة للسلة
+                            @else
+                                نفذت الكمية
+                            @endif
+                        </button>
                     </div>
                 </div>
             </div>
@@ -154,26 +193,32 @@
         <!-- Related Products -->
         @if($relatedProducts->count() > 0)
             <div class="mt-16">
-                <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-                    <span class="w-1 h-8 bg-blue-600 rounded-full"></span>
+                <h2 class="text-3xl font-bold text-slate-900 mb-8 flex items-center gap-3">
+                    <span class="w-1 h-8 bg-gradient-to-b from-blue-600 to-red-600 rounded-full"></span>
                     منتجات مشابهة
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     @foreach($relatedProducts as $related)
-                        <a href="{{ route('client.product.details', $related) }}" class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-blue-300 transform hover:-translate-y-1">
-                            <div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 group-hover:opacity-90 transition-opacity">
-                                <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                    <svg class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
+                        <a href="{{ route('client.product.details', $related) }}" class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-blue-200 hover:border-red-300 transform hover:-translate-y-2">
+                            <div class="aspect-square bg-gradient-to-br from-blue-50 to-red-50 group-hover:opacity-90 transition-opacity overflow-hidden">
+                                @if($related->image)
+                                    <img src="{{ asset('storage/' . $related->image) }}" 
+                                         alt="{{ $related->name }}"
+                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center text-blue-400">
+                                        <svg class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                @endif
                             </div>
                             <div class="p-4">
-                                <h3 class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 mb-2">
+                                <h3 class="text-sm font-semibold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 mb-2">
                                     {{ $related->name }}
                                 </h3>
-                                <p class="text-xl font-bold text-gray-900">
-                                    {{ number_format($related->sale_price, 0) }} <span class="text-sm text-gray-500 font-normal">ر.س</span>
+                                <p class="text-xl font-bold text-blue-600">
+                                    {{ number_format($related->sale_price, 0) }} <span class="text-sm text-slate-500 font-normal">ر.س</span>
                                 </p>
                             </div>
                         </a>

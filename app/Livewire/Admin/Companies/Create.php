@@ -4,15 +4,19 @@ namespace App\Livewire\Admin\Companies;
 
 use App\Models\Company;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Create extends Component
 {
+    use WithFileUploads;
+
     public $name = '';
     public $contact_name = '';
     public $phone = '';
     public $email = '';
     public $address = '';
     public $is_active = true;
+    public $image;
 
     protected $rules = [
         'name' => 'required|min:3',
@@ -21,6 +25,7 @@ class Create extends Component
         'email' => 'nullable|email',
         'address' => 'nullable|string',
         'is_active' => 'boolean',
+        'image' => 'nullable|image|max:2048',
     ];
 
     protected $messages = [
@@ -33,6 +38,11 @@ class Create extends Component
     {
         $this->validate();
 
+        $imagePath = null;
+        if ($this->image) {
+            $imagePath = $this->image->store('companies', 'public');
+        }
+
         Company::create([
             'name' => $this->name,
             'contact_name' => $this->contact_name,
@@ -40,6 +50,7 @@ class Create extends Component
             'email' => $this->email,
             'address' => $this->address,
             'is_active' => $this->is_active,
+            'image' => $imagePath,
         ]);
 
         session()->flash('message', 'تم إضافة الشركة بنجاح.');
