@@ -1,9 +1,9 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 py-8">
+<div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Header & Search -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-700 to-red-600 bg-clip-text text-transparent fade-in">المنتجات</h1>
+            <h1 class="text-3xl font-bold mb-6 text-blue-600 fade-in">المنتجات</h1>
             
             <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-slate-200 hover:border-blue-600 transition-all duration-300 scale-in">
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -63,50 +63,50 @@
         @if($products->count() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($products as $product)
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group border-2 border-slate-200 hover:border-blue-600 scale-in">
-                        <!-- Product Image -->
-                        <div class="aspect-square bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center overflow-hidden">
+                    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-blue-300 flex flex-col transform hover:-translate-y-1">
+                        <a href="{{ route('client.product.details', $product) }}" class="block relative aspect-square bg-gray-100 overflow-hidden">
                             @if($product->image)
                                 <img src="{{ asset('storage/' . $product->image) }}" 
                                      alt="{{ $product->name }}"
                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             @else
-                                <svg class="w-16 h-16 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center text-gray-400 group-hover:scale-110 transition-transform duration-500">
+                                    <svg class="w-20 h-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
                             @endif
-                        </div>
-                        
-                        <div class="p-4 flex-1 flex flex-col">
-                            <div class="mb-2 flex items-center gap-2">
-                                @if($product->category)
-                                    <span class="text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-1 rounded-full">
-                                        {{ $product->category->name }}
-                                    </span>
-                                @endif
-                                @if($product->company)
-                                    <span class="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded-full">
-                                        {{ $product->company->name }}
-                                    </span>
-                                @endif
+                            <!-- Badge -->
+                            @if($product->stock > 0)
+                                <div class="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                                    متوفر
+                                </div>
+                            @else
+                                <div class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                                    غير متوفر
+                                </div>
+                            @endif
+                        </a>
+                        <div class="p-5 flex-1 flex flex-col">
+                            <div class="flex-1">
+                                <p class="text-xs font-semibold text-blue-600 mb-1 uppercase tracking-wide">
+                                    {{ $product->category?->name }}
+                                </p>
+                                <h3 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
+                                    <a href="{{ route('client.product.details', $product) }}">
+                                        {{ $product->name }}
+                                    </a>
+                                </h3>
+                                <p class="text-sm text-gray-600 line-clamp-2 mb-3">
+                                    {{ $product->description }}
+                                </p>
                             </div>
-                            
-                            <h3 class="text-lg font-bold text-slate-900 mb-1 line-clamp-1 group-hover:bg-gradient-to-r group-hover:from-blue-700 group-hover:to-red-600 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
-                                <a href="{{ route('client.product.details', $product) }}">
-                                    {{ $product->name }}
-                                </a>
-                            </h3>
-                            
-                            <p class="text-sm text-slate-600 mb-4 line-clamp-2 flex-1">
-                                {{ $product->description }}
-                            </p>
-                            
-                            <div class="mt-auto pt-4 border-t border-slate-200 space-y-3">
+                            <div class="mt-auto pt-4 border-t border-gray-100 space-y-3">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xl font-bold bg-gradient-to-r from-blue-700 to-red-600 bg-clip-text text-transparent">
+                                    <span class="text-xl font-bold text-gray-900">
                                         {{ number_format($product->sale_price, 0) }}
                                     </span>
-                                    <span class="text-sm font-normal text-slate-500">ر.س</span>
+                                    <span class="text-sm font-normal text-gray-500">ر.س</span>
                                 </div>
                                 
                                 <div class="flex items-center gap-2">

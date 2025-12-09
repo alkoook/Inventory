@@ -79,7 +79,7 @@
                     <div class="flex items-center gap-12">
                         <!-- الشعار -->
                         <a href="{{ route('client.catalog') }}" class="flex items-center gap-3 group transform hover:scale-[1.03] transition-transform duration-300">
-                            <div class="w-10 h-10 bg-gradient-to-br from-[#10B981] to-green-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-teal-200 group-hover:shadow-teal-300 transition-all">
+                            <div class="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center text-white shadow-lg transition-all">
                                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                 </svg>

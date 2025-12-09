@@ -9,7 +9,7 @@
                 <button 
                     wire:click="approve"
                     wire:confirm="هل أنت متأكد من الموافقة على هذا الطلب؟ سيتم إنشاء فاتورة مبيعات وتحديث المخزون."
-                    class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl">
+                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl">
                     تأكيد الموافقة
                 </button>
                 <a href="{{ route('admin.orders.view', $cartId) }}" 

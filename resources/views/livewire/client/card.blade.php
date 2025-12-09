@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-red-50 py-8">
+<div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="mb-8 flex items-center justify-between">
@@ -50,7 +50,7 @@
                     @foreach($cart->items as $item)
                         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 flex gap-4">
                             <!-- Image -->
-                            <div class="w-24 h-24 bg-gradient-to-br from-blue-50 to-red-50 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden">
+                            <div class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden">
                                 @if($item->product?->image)
                                     <img src="{{ asset('storage/' . $item->product->image) }}" 
                                          alt="{{ $item->product->name }}"
@@ -133,7 +133,7 @@
                         <button 
                             wire:click="submitOrder"
                             wire:confirm="هل أنت متأكد من إرسال الطلب؟ سيتم إرساله للإدارة للموافقة عليه."
-                            class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-lg transition-all shadow-sm hover:shadow-lg"
+                            class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all shadow-sm hover:shadow-lg"
                         >
                             إرسال الطلب
                         </button>

@@ -3,15 +3,16 @@
 namespace App\Livewire\Admin\PurchaseInvoices;
 
 use App\Models\Company;
-use App\Models\InventoryTransaction;
 use App\Models\Product;
 use App\Models\PurchaseInvoice;
 use App\Models\PurchaseInvoiceItem;
 use Livewire\Component;
 
-class Create extends Component
+class Edit extends Component
 {
-    public $company_id = '';
+    public $invoice_id;
+
+    public $company_id = null;
 
     public $invoice_date;
 
@@ -25,23 +26,82 @@ class Create extends Component
 
     public $products = [];
 
-    protected $rules = [
-        'company_id' => 'nullable|exists:companies,id',
-        'invoice_date' => 'required|date',
-        'currency' => 'required|in:USD,SYP',
-        'items' => 'required|array|min:1',
-        'items.*.product_id' => 'required|exists:products,id',
-        'items.*.quantity' => 'required|integer|min:1',
-        'items.*.unit_of_measure' => 'required|in:غرام,كيلو,قطعة,علبة,كيس,ظرف,تنكة,طرد',
-        'items.*.unit_price' => 'required|numeric|min:0',
-    ];
-
-    public function mount()
+    public function mount($id)
     {
-        $this->invoice_date = now()->format('Y-m-d');
+        $this->invoice_id = $id;
+        $invoice = PurchaseInvoice::with('items.product')->findOrFail($id);
+
+        $this->company_id = $invoice->company_id;
+        $this->invoice_date = $invoice->invoice_date->format('Y-m-d');
+        $this->currency = $invoice->currency ?? 'USD';
+        $this->notes = $invoice->notes;
+
         $this->products = Product::select('id', 'name', 'sku', 'purchase_price')->get();
-        $this->addItem();
+
+        // تحميل الأصناف
+        foreach ($invoice->items as $item) {
+            $this->items[] = [
+                'product_id' => $item->product_id,
+                'product_search' => $item->product->name.' — '.$item->product->sku,
+                'quantity' => $item->quantity,
+                'unit_of_measure' => $item->unit_of_measure,
+                'unit_price' => $item->unit_price,
+            ];
+        }
+
         $this->calculateTotal();
+    }
+
+    protected function rules()
+    {
+        return [
+            'company_id' => 'nullable|exists:companies,id',
+            'invoice_date' => 'required|date',
+            'currency' => 'required|in:USD,SYP',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.unit_of_measure' => 'required|in:غرام,كيلو,قطعة,علبة,كيس,ظرف,تنكة,طرد',
+            'items.*.unit_price' => 'required|numeric|min:0',
+        ];
+    }
+
+    public function updated($property, $value)
+    {
+        if (preg_match('/items\.(\d+)\.(quantity|unit_price)/', $property)) {
+            $this->calculateTotal();
+        }
+
+        if (preg_match('/items\.(\d+)\.product_search/', $property, $matches)) {
+            $index = $matches[1];
+            $search_term = $this->items[$index]['product_search'] ?? '';
+
+            $product_data = explode('—', $search_term);
+            $product_name = trim($product_data[0]);
+
+            $product = $this->products->first(function ($p) use ($product_name) {
+                return $p->name === $product_name;
+            });
+
+            if ($product) {
+                $this->items[$index]['product_id'] = $product->id;
+                $this->items[$index]['unit_price'] = $product->purchase_price;
+                $this->calculateTotal();
+            } else {
+                $this->items[$index]['product_id'] = null;
+            }
+        }
+    }
+    
+    public function calculateTotal()
+    {
+        $total = 0;
+        foreach ($this->items as $item) {
+            $quantity = (float) ($item['quantity'] ?? 0);
+            $price = (float) ($item['unit_price'] ?? 0);
+            $total += $quantity * $price;
+        }
+        $this->total_amount = round($total, 2);
     }
 
     public function addItem()
@@ -63,65 +123,25 @@ class Create extends Component
         $this->calculateTotal();
     }
 
-    public function updated($property, $value)
-    {
-        // تحديث Total Amount عند تغيير الكمية أو السعر
-        if (preg_match('/items\.(\d+)\.(quantity|unit_price)/', $property)) {
-            $this->calculateTotal();
-        }
-
-        // مزامنة بيانات المنتج عند البحث
-        if (preg_match('/items\.(\d+)\.product_search/', $property, $matches)) {
-            $index = $matches[1];
-            $search_term = $this->items[$index]['product_search'] ?? '';
-
-            // محاولة استخراج ID من القيمة (إذا كانت تحتوي على اسم المنتج و SKU)
-            $product_data = explode('—', $search_term);
-            $product_name = trim($product_data[0]);
-
-            $product = $this->products->first(function ($p) use ($product_name) {
-                return $p->name === $product_name;
-            });
-
-            if ($product) {
-                $this->items[$index]['product_id'] = $product->id;
-                // تحديث سعر الوحدة تلقائياً من سعر الشراء للمنتج
-                $this->items[$index]['unit_price'] = $product->purchase_price;
-                $this->calculateTotal();
-            } else {
-                $this->items[$index]['product_id'] = null;
-            }
-        }
-    }
-    
-    public function calculateTotal()
-    {
-        $total = 0;
-        foreach ($this->items as $item) {
-            $quantity = (float) ($item['quantity'] ?? 0);
-            $price = (float) ($item['unit_price'] ?? 0);
-            $total += $quantity * $price;
-        }
-        $this->total_amount = round($total, 2);
-    }
-
     public function save()
     {
         $this->validate();
+        $this->calculateTotal();
 
-        $totalAmount = collect($this->items)->sum(function ($item) {
-            return $item['quantity'] * $item['unit_price'];
-        });
+        $invoice = PurchaseInvoice::findOrFail($this->invoice_id);
 
-        $invoice = PurchaseInvoice::create([
+        $invoice->update([
             'company_id' => $this->company_id ?: null,
-            'invoice_number' => 'PINV-'.time(),
             'invoice_date' => $this->invoice_date,
-            'total_amount' => $totalAmount,
+            'total_amount' => $this->total_amount,
             'currency' => $this->currency,
             'notes' => $this->notes,
         ]);
 
+        // حذف الأصناف القديمة
+        $invoice->items()->delete();
+
+        // إضافة الأصناف الجديدة
         foreach ($this->items as $item) {
             PurchaseInvoiceItem::create([
                 'purchase_invoice_id' => $invoice->id,
@@ -131,18 +151,9 @@ class Create extends Component
                 'unit_price' => $item['unit_price'],
                 'total_price' => $item['quantity'] * $item['unit_price'],
             ]);
-
-            InventoryTransaction::createTransaction(
-                $item['product_id'],
-                'purchase',
-                $item['quantity'],
-                'App\Models\PurchaseInvoice',
-                $invoice->id,
-                'شراء - فاتورة: '.$invoice->invoice_number
-            );
         }
 
-        session()->flash('message', 'تم إنشاء الفاتورة بنجاح.');
+        session()->flash('message', 'تم تحديث الفاتورة بنجاح.');
 
         return redirect()->route('admin.purchase-invoices.index');
     }
@@ -150,11 +161,11 @@ class Create extends Component
     public function render()
     {
         $companies = Company::where('is_active', true)->get();
-        $products = Product::all();
 
-        return view('livewire.admin.purchase-invoices.create', [
+        return view('livewire.admin.purchase-invoices.edit', [
             'companies' => $companies,
-            'products' => $products,
-        ])->layout('components.layouts.admin', ['header' => 'إنشاء فاتورة مشتريات']);
+            'products' => $this->products,
+        ])->layout('components.layouts.admin', ['header' => 'تعديل فاتورة مشتريات']);
     }
 }
+

@@ -1,8 +1,8 @@
-<div class="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 py-12">
+<div class="min-h-screen bg-gray-50 py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
             <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold bg-gradient-to-r from-red-600 to-red-500 bg-clip-text text-transparent sm:text-5xl mb-4 transform-3d">
+            <h1 class="text-4xl font-bold text-red-600 sm:text-5xl mb-4 transform-3d">
                 تصفح حسب الأصناف
             </h1>
             <p class="max-w-2xl text-lg text-slate-600 mx-auto">
@@ -69,7 +69,7 @@
                                                  class="w-full h-full object-cover">
                                         </div>
                                     @else
-                                        <div class="w-24 h-24 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:rotate-3 group-hover:scale-110 group">
+                                        <div class="w-24 h-24 bg-blue-600 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:rotate-3 group-hover:scale-110 group">
                                             <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                                             </svg>

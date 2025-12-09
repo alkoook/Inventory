@@ -5,8 +5,8 @@
         </div>
     @endif
 
-    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.1);">
-        <div class="p-6 border-b border-slate-700/50 flex flex-col sm:flex-row justify-between items-center gap-4" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(239, 68, 68, 0.03) 100%);">
+    <div class="bg-slate-800 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+        <div class="p-6 border-b border-slate-700/50 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-800">
             <div class="relative w-full sm:w-64">
                 <input wire:model.live="search" type="text" placeholder="بحث عن صنف..." class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 placeholder-gray-400 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5 pl-10 transition-all">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -16,7 +16,7 @@
                 </div>
             </div>
             
-            <a href="{{ route('admin.categories.create') }}" class="w-full sm:w-auto text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 focus:ring-4 focus:ring-blue-500/50 font-medium rounded-xl text-sm px-5 py-2.5 flex items-center justify-center gap-2 transition-all shadow-lg" style="box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);">
+            <a href="{{ route('admin.categories.create') }}" class="w-full sm:w-auto text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-500/50 font-medium rounded-xl text-sm px-5 py-2.5 flex items-center justify-center gap-2 transition-all shadow-lg">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>

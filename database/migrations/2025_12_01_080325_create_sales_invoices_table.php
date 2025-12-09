@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('cost_amount', 15, 2)->default(0);
             $table->decimal('profit_amount', 15, 2)->default(0);
             $table->enum('status', ['draft', 'pending_approval', 'approved', 'rejected'])->default('approved');
+            $table->enum('currency', ['USD', 'SYP'])->default('USD');
             $table->string('pdf_path')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();

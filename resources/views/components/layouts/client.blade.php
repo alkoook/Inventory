@@ -94,17 +94,17 @@
         }
 
         .nav-link:hover {
-            background: linear-gradient(135deg, #eff6ff 0%, #fef2f2 100%);
+            background: #f3f4f6;
             transform: translateX(-4px) translateZ(8px) rotateY(2deg);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         /* Style for the active link */
         .active-link {
-            background: linear-gradient(135deg, #dbeafe 0%, #fee2e2 100%);
+            background: #e5e7eb;
             border-right: 3px solid #3b82f6;
             transform: translateZ(8px);
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
         .group:hover .group-hover\:bg-indigo-50 {
@@ -119,7 +119,7 @@
         .logo-icon {
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             transform-style: preserve-3d;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: #3b82f6;
         }
 
         .logo-icon:hover {
@@ -210,7 +210,7 @@
     </style>
     @livewireStyles
 </head>
-<body class="bg-gradient-to-br from-blue-50 via-white to-red-50 text-slate-900 antialiased">
+<body class="bg-gray-50 text-slate-900 antialiased">
     <div class="min-h-screen">
         <!-- Backdrop for mobile sidebar -->
         <div id="backdrop" onclick="toggleSidebar()"></div>
@@ -218,11 +218,9 @@
         <!-- Sidebar (RTL: fixed right) -->
         <aside id="sidebar" class="fixed right-0 top-0 h-screen w-72 p-0 smooth-transition">
             <!-- Logo Area - Clean & Simple -->
-            <div class="p-6 border-b border-blue-200 flex justify-center bg-gradient-to-br from-blue-50 to-white">
+            <div class="p-6 border-b border-blue-200 flex justify-center bg-white">
                 <div class="flex items-center gap-3">
-                    <div class="logo-icon w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-md">
-                        <span class="text-xl font-bold">M</span>
-                    </div>
+                
                     <div>
                         <h1 class="text-xl font-semibold text-slate-800">{{ \App\Models\Setting::get('site_name', 'المتجر') }}</h1>
                         <p class="text-xs text-slate-500">نظام إدارة المخزون</p>
@@ -311,19 +309,19 @@
 
                 <!-- تسجيل الخروج/دخول -->
                 @auth
-                    <form action="{{ route('admin.logout') }}" method="POST"
-                         class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-slate-600 hover:text-slate-800">
+                    <form action="{{ route('client.logout') }}" method="POST"
+                         class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-slate-600 hover:text-red-600 hover:bg-red-50">
                         @csrf
-                        <div class="p-2 rounded-lg bg-slate-100 text-slate-500">
+                        <div class="p-2 rounded-lg bg-red-100 text-red-600">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                             </svg>
                         </div>
-                        <button type="submit">تسجيل الخروج</button>
+                        <button type="submit" class="font-medium">تسجيل الخروج</button>
                     </form>
                 @else
                     <a href="{{ route('login') }}" 
-                       class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-slate-600 hover:text-slate-800">
+                       class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-slate-600 hover:text-blue-600">
                         <div class="p-2 rounded-lg bg-slate-100 text-slate-500">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />

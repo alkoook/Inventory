@@ -28,6 +28,14 @@ class Approve extends Component
                 return;
             }
 
+            // التحقق من المخزون قبل الموافقة
+            foreach ($cart->items as $item) {
+                if ($item->quantity > $item->product->stock) {
+                    session()->flash('error', "المخزون غير كافٍ للمنتج '{$item->product->name}'. المخزون المتاح: {$item->product->stock}، المطلوب: {$item->quantity}");
+                    return;
+                }
+            }
+
             // Create sales invoice
             $invoice = SalesInvoice::create([
                 'user_id' => auth()->id(),

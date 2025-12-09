@@ -17,6 +17,7 @@ class PurchaseInvoice extends Model
         'paid_amount',
         'remaining_amount',
         'status',
+        'currency',
         'notes',
     ];
 

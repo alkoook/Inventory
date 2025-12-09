@@ -1,6 +1,6 @@
 <div>
     <div class="max-w-5xl mx-auto">
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 shadow-xl rounded-2xl p-8">
+        <div class="bg-slate-800 border border-slate-700/50 shadow-xl rounded-2xl p-8">
             <h2 class="text-2xl font-bold mb-8 text-gray-100 flex items-center gap-3">
                 <div class="p-2 rounded-lg bg-blue-500/20 text-blue-400">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,9 +52,9 @@
                     </div>
 
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-300">الشركة *</label>
+                        <label class="block mb-2 text-sm font-medium text-gray-300">الشركة</label>
                         <select wire:model="company_id" class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                            <option value="">اختر...</option>
+                            <option value="">بدون شركة</option>
                             @foreach($companies as $comp)
                                 <option value="{{ $comp->id }}">{{ $comp->name }}</option>
                             @endforeach
@@ -95,6 +95,7 @@
                             <option value="كيس">كيس</option>
                             <option value="ظرف">ظرف</option>
                             <option value="تنكة">تنكة</option>
+                            <option value="طرد">طرد</option>
                         </select>
                         @error('unit_of_measure') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
@@ -107,7 +108,7 @@
 
                 <div class="flex justify-end gap-3 pt-6 border-t border-slate-700/50">
                     <a href="{{ route('admin.products.index') }}" class="bg-slate-700 hover:bg-slate-600 text-gray-100 px-6 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl">إلغاء</a>
-                    <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>

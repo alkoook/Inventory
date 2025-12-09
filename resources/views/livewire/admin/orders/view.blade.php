@@ -47,12 +47,12 @@
                 <div class="flex justify-end gap-3 pt-4 border-t border-slate-700/50">
                     <a href="{{ route('admin.orders.approve', $cart->id) }}" 
                        wire:navigate
-                       class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl">
+                       class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl">
                         موافقة
                     </a>
                     <a href="{{ route('admin.orders.reject', $cart->id) }}" 
                        wire:navigate
-                       class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl">
+                       class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl">
                         رفض
                     </a>
                     <a href="{{ route('admin.orders.index') }}" 

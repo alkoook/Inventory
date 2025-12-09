@@ -10,8 +10,8 @@
             </div>
         @endif
 
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.1);">
-            <div class="p-6 border-b border-slate-700/50" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(239, 68, 68, 0.03) 100%);">
+        <div class="bg-slate-800 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <div class="p-6 border-b border-slate-700/50 bg-slate-800">
                 <h2 class="text-lg font-bold text-gray-100">إعدادات الموقع ومعلومات التواصل</h2>
                 <p class="text-sm text-gray-400 mt-1">قم بتحديث المعلومات التي تظهر للزوار في الفوتر وصفحة اتصل بنا.</p>
             </div>
@@ -90,7 +90,7 @@
 
                 <!-- Actions -->
                 <div class="flex justify-end pt-6 border-t border-slate-700/50">
-                    <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-medium rounded-lg shadow-lg transition-all flex items-center gap-2" style="box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);">
+                    <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg transition-all flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>

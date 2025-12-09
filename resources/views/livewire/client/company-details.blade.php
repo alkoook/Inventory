@@ -1,10 +1,16 @@
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+<div class="min-h-screen bg-gray-50">
     <!-- Company Hero -->
-    <div class="bg-gradient-to-r from-blue-600 to-blue-800 border-b border-blue-700">
+    <div class="bg-blue-600 border-b border-blue-700">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
             <div class="flex flex-col md:flex-row items-center gap-8">
                 <div class="w-32 h-32 rounded-2xl bg-white flex items-center justify-center flex-shrink-0 shadow-xl">
-                    <span class="text-5xl">🏢</span>
+                    @if(file_exists(public_path('logo.png')))
+                        <img src="{{ asset('logo.png') }}" alt="Logo" class="w-full h-full object-contain p-4">
+                    @else
+                        <svg class="w-16 h-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    @endif
                 </div>
                 <div class="text-center md:text-right flex-1">
                     <h1 class="text-4xl font-extrabold text-white sm:text-5xl">
@@ -58,7 +64,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($products as $product)
                     <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-blue-300 flex flex-col transform hover:-translate-y-1">
-                        <a href="{{ route('client.product.details', $product) }}" class="block relative aspect-square bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                        <a href="{{ route('client.product.details', $product) }}" class="block relative aspect-square bg-gray-100 overflow-hidden">
                             <div class="absolute inset-0 flex items-center justify-center text-gray-400 group-hover:scale-110 transition-transform duration-500">
                                 <svg class="w-20 h-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -89,21 +95,59 @@
                                     {{ $product->description }}
                                 </p>
                             </div>
-                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-                                <div>
-                                    <span class="text-2xl font-bold text-gray-900">
+                            <div class="mt-auto pt-4 border-t border-gray-100 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xl font-bold text-gray-900">
                                         {{ number_format($product->sale_price, 0) }}
                                     </span>
-                                    <span class="text-sm text-gray-500 mr-1">ر.س</span>
+                                    <span class="text-sm font-normal text-gray-500">ر.س</span>
                                 </div>
+                                
+                                <div class="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        wire:click="decrement({{ $product->id }})"
+                                        @if(($quantities[$product->id] ?? 1) <= 1) disabled @endif
+                                        class="w-10 h-10 bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 disabled:hover:scale-100"
+                                    >
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
+                                        </svg>
+                                    </button>
+                                    
+                                    <input
+                                        type="number"
+                                        wire:model.live="quantities.{{ $product->id }}"
+                                        min="1"
+                                        max="{{ $product->stock }}"
+                                        class="flex-1 h-10 text-center text-lg font-bold text-blue-600 bg-white border-2 border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                                    >
+                                    
+                                    <button
+                                        type="button"
+                                        wire:click="increment({{ $product->id }})"
+                                        @if(($quantities[$product->id] ?? 1) >= $product->stock) disabled @endif
+                                        class="w-10 h-10 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 disabled:hover:scale-100"
+                                    >
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
                                 <button
-                                    wire:click="$dispatch('add-to-cart', { productId: {{ $product->id }} })"
-                                    class="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center gap-2"
+                                    wire:click="addToCart({{ $product->id }})"
+                                    @if($product->stock <= 0) disabled @endif
+                                    class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 flex items-center justify-center gap-2"
                                 >
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                    </svg>
-                                    إضافة
+                                    @if($product->stock > 0)
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        إضافة للسلة
+                                    @else
+                                        نفذت الكمية
+                                    @endif
                                 </button>
                             </div>
                         </div>

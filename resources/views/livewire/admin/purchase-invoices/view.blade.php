@@ -1,5 +1,5 @@
 <div>
-    <div class="max-w-3xl mx-auto bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-xl p-6" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.1);">
+    <div class="max-w-3xl mx-auto bg-slate-800 rounded-2xl border border-slate-700/50 shadow-xl p-6" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
         <h2 class="text-2xl font-bold mb-6 text-gray-100">فاتورة مشتريات #{{ $invoice->invoice_number }}</h2>
         
         <div class="mb-6 grid grid-cols-2 gap-4 text-sm text-gray-300">
@@ -26,15 +26,15 @@
                         <td class="px-4 py-2 text-gray-100">{{ $item->product->name }}</td>
                         <td class="px-4 py-2 text-gray-300">{{ $item->quantity }}</td>
                         <td class="px-4 py-2 text-gray-300">{{ $item->unit_of_measure ?? 'قطعة' }}</td>
-                        <td class="px-4 py-2 text-gray-300">${{ number_format($item->unit_price, 2) }}</td>
-                        <td class="px-4 py-2 font-semibold text-gray-100">${{ number_format($item->total_price, 2) }}</td>
+                    <td class="px-4 py-2 text-gray-300">{{ number_format($item->unit_price, 2) }} {{ $invoice->currency ?? 'USD' }}</td>
+                    <td class="px-4 py-2 font-semibold text-gray-100">{{ number_format($item->total_price, 2) }} {{ $invoice->currency ?? 'USD' }}</td>
                     </tr>
                 @endforeach
             </tbody>
             <tfoot class="bg-slate-800/50 font-bold border-t border-slate-700/50">
                 <tr>
                     <td colspan="4" class="px-4 py-2 text-right text-gray-300">المجموع الكلي:</td>
-                    <td class="px-4 py-2 text-right text-green-400">${{ number_format($invoice->total_amount, 2) }}</td>
+                    <td class="px-4 py-2 text-right text-green-400">{{ number_format($invoice->total_amount, 2) }} {{ $invoice->currency ?? 'USD' }}</td>
                 </tr>
             </tfoot>
         </table>

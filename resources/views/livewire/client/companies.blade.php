@@ -1,8 +1,8 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 py-12">
+<div class="min-h-screen bg-gray-50 py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent sm:text-5xl mb-4 transform-3d">
+            <h1 class="text-4xl font-bold text-blue-600 sm:text-5xl mb-4 transform-3d">
                 شركاؤنا
                 </h1>
             <p class="max-w-2xl text-lg text-slate-600 mx-auto">
@@ -79,15 +79,21 @@
                                class="group block card-3d" wire:ignore>
                                 <div class="bg-white rounded-2xl shadow-md border-2 border-blue-200 hover:border-blue-400 hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 overflow-hidden">
                                     <!-- Company Image/Header -->
-                                    <div class="relative h-40 bg-gradient-to-br from-blue-500 to-blue-600 overflow-hidden">
+                                    <div class="relative h-40 bg-blue-600 overflow-hidden">
                                         @if($company->image)
                                             <img src="{{ asset('storage/' . $company->image) }}" 
                                                  alt="{{ $company->name }}"
                                                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                         @else
                         <div class="absolute inset-0 flex items-center justify-center">
-                                                <div class="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg flex items-center justify-center text-5xl transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                                🏢
+                            <div class="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                                @if(file_exists(public_path('logo.png')))
+                                    <img src="{{ asset('logo.png') }}" alt="Logo" class="w-full h-full object-contain p-4">
+                                @else
+                                    <svg class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                @endif
                             </div>
                         </div>
                                         @endif

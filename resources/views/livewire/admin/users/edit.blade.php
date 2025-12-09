@@ -1,9 +1,9 @@
 <div>
     <div class="max-w-2xl mx-auto">
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.1);">
+        <div class="bg-slate-800 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
 
             <!-- Header -->
-            <div class="p-6 border-b border-slate-700/50" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(239, 68, 68, 0.03) 100%);">
+            <div class="p-6 border-b border-slate-700/50 bg-slate-800">
                 <h2 class="text-xl font-bold text-gray-100">تعديل المستخدم</h2>
             </div>
 
@@ -129,7 +129,7 @@
 
                     <button 
                         type="submit" 
-                        class="text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 
+                        class="text-white bg-blue-600 hover:bg-blue-700 
                                focus:ring-4 focus:outline-none focus:ring-blue-500/50 
                                font-medium rounded-xl text-sm px-5 py-2.5 transition-all shadow-lg"
                         style="box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);"

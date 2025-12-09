@@ -18,6 +18,7 @@ class SalesInvoice extends Model
         'cost_amount',
         'profit_amount',
         'status',
+        'currency',
         'pdf_path',
         'notes',
     ];

@@ -1,6 +1,6 @@
 <div class="max-w-4xl mx-auto bg-slate-800 rounded-2xl border border-slate-700/50 shadow-xl p-6" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
 
-    <h2 class="text-xl font-bold text-gray-100 mb-6">إنشاء فاتورة مبيعات</h2>
+    <h2 class="text-xl font-bold text-gray-100 mb-6">تعديل فاتورة مبيعات</h2>
 
     <form wire:submit.prevent="save" class="space-y-6">
 
@@ -11,7 +11,6 @@
             <div>
                 <label class="block mb-2 text-sm font-medium text-gray-300">الزبون *</label>
 
-                {{-- Search Input tied to customer_name --}}
                 <input 
                     wire:model.live="customer_name"
                     list="customers_list"
@@ -19,17 +18,15 @@
                     class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 placeholder-gray-400 rounded-xl p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 >
 
-                <!-- Hidden input to hold the actual ID -->
-                <input type="hidden" wire:model="customer_id">
+                <input type="hidden" wire:model="user_id">
 
                 <datalist id="customers_list">
-                    {{-- Customers are loaded in the mount() method --}}
                     @foreach($customers as $customer)
                         <option value="{{ $customer->name }}" data-id="{{ $customer->id }}"></option>
                     @endforeach
                 </datalist>
 
-                @error('customer_id')
+                @error('user_id')
                     <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span>
                 @enderror
             </div>
@@ -79,12 +76,10 @@
                     <input 
                         placeholder="ابحث بالاسم أو SKU"
                         list="products_list"
-                        {{-- .live.debounce.300ms is highly recommended for search inputs in Livewire --}}
                         wire:model.live.debounce.300ms="items.{{ $index }}.product_search"
                         class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 placeholder-gray-400 rounded-xl p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     >
 
-                    <!-- Hidden input to hold the actual product_id -->
                     <input type="hidden" wire:model="items.{{ $index }}.product_id">
 
                     @error("items.$index.product_id")
@@ -146,7 +141,7 @@
                     @enderror
                 </div>
                 
-                <!-- Subtotal (Added for better UX) -->
+                <!-- Subtotal -->
                 @php
                     $subtotal = ($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0);
                 @endphp
@@ -180,9 +175,8 @@
 
         </div>
 
-        <!-- Products list (datalist definition) -->
+        <!-- Products list -->
         <datalist id="products_list">
-            {{-- Products are loaded in the mount() method --}}
             @foreach($products as $product)
                 <option 
                     value="{{ $product->name }} — {{ $product->sku }}" 
@@ -198,7 +192,6 @@
                 <p class="text-3xl font-extrabold text-blue-400">{{ number_format($total_amount, 2) }} <span class="text-xl">{{ $currency === 'USD' ? 'USD' : 'SYP' }}</span></p>
             </div>
         </div>
-
 
         <!-- Notes -->
         <div>
@@ -224,10 +217,11 @@
                 class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition duration-150 font-semibold shadow-lg"
                 wire:loading.attr="disabled"
             >
-                <span wire:loading.remove wire:target="save">حفظ الفاتورة</span>
+                <span wire:loading.remove wire:target="save">حفظ التعديلات</span>
                 <span wire:loading wire:target="save">جاري الحفظ...</span>
             </button>
         </div>
 
     </form>
-</div
+</div>
+

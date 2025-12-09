@@ -16,7 +16,7 @@
         {{--  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');  --}}
         body {
             font-family: 'Cairo', sans-serif;
-            background: rgb(146, 140, 231);
+            background: #1e293b;
 
         }
         
@@ -36,7 +36,7 @@
             transform: translateX(100%); /* Initially hide off-screen (Mobile) */
             transition: transform 0.3s ease-in-out;
             /* Dark Theme - Clean and Comfortable */
-            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            background: #1e293b;
             box-shadow: -8px 0 30px rgba(0, 0, 0, 0.3);
         }
 
@@ -100,6 +100,10 @@
             border-right: 3px solid #2563eb;
         }
         
+        .active-link .p-2 {
+            background: rgba(37, 99, 235, 0.3) !important;
+        }
+        
         /* Dark theme scrollbar */
         /* Hide scrollbar but keep functionality */
         nav {
@@ -128,18 +132,12 @@
             <div class="p-6 border-b border-slate-700/50 flex justify-center">
                     <div class="flex items-center gap-3">
                     <div class="logo-icon w-12 h-12 rounded-2xl bg-blue-600 shadow-lg flex items-center justify-center text-white smooth-transition overflow-hidden">
-                        @if(file_exists(public_path('logo')) && is_dir(public_path('logo')))
-                            @php
-                                $logoFiles = glob(public_path('logo') . '/*.{jpg,jpeg,png,gif,svg,webp}', GLOB_BRACE);
-                                $logoPath = !empty($logoFiles) ? 'logo/' . basename($logoFiles[0]) : null;
-                            @endphp
-                            @if($logoPath)
-                                <img src="{{ asset($logoPath) }}" alt="Logo" class="w-full h-full object-cover">
-                            @else
-                                <span style="transform: rotate(15deg);">💎</span>
-                            @endif
+                        @if(file_exists(public_path('logo.png')))
+                            <img src="{{ asset('logo.png') }}" alt="Logo" class="w-full h-full object-cover">
                         @else
-                            <span style="transform: rotate(15deg);">💎</span>
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
                         @endif
                     </div>
                     <div>
@@ -156,9 +154,10 @@
                     I am using static '#' links instead of Blade routes.
                 -->
 
+                @if(auth()->user()->hasRole('admin'))
                 <!-- الرئيسية (Dashboard) -->
                 <a href="{{ route('admin.dashboard') }}" 
-                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition active-link text-blue-400 font-semibold">
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.dashboard') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
                     <div class="p-2 rounded-lg bg-blue-500/20 text-blue-400">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -166,6 +165,7 @@
                     </div>
                     <span>الرئيسية</span>
                 </a>
+                @endif
 
                 <!-- الإدارة (Management) Section -->
                 <div class="px-4 pt-6 pb-2">
@@ -174,7 +174,7 @@
 
                 <!-- الأصناف (Categories) -->
                 <a href="{{ route('admin.categories.index') }}" 
-                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition text-gray-300 hover:text-gray-100 hover:bg-slate-700/50">
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.categories.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
                     <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -185,7 +185,7 @@
 
                 <!-- المنتجات (Products) -->
                 <a href="{{ route('admin.products.index') }}" 
-                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition text-gray-300 hover:text-gray-100 hover:bg-slate-700/50">
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.products.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
                     <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -196,7 +196,7 @@
 
                 <!-- المخزون (Inventory) -->
                 <a href="{{ route('admin.inventory.index') }}" 
-                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition text-gray-300 hover:text-gray-100 hover:bg-slate-700/50">
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.inventory.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
                     <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -207,7 +207,7 @@
 
                 <!-- الشركات (Companies) -->
                 <a href="{{ route('admin.companies.index') }}" 
-                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition text-gray-300 hover:text-gray-100 hover:bg-slate-700/50">
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.companies.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
                     <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -224,7 +224,7 @@
            
                 <!-- الطلبات (Orders) -->
                 <a href="{{ route('admin.orders.index') }}" 
-                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition text-gray-300 hover:text-gray-100 hover:bg-slate-700/50">
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.orders.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
                     <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -235,7 +235,7 @@
 
                 <!-- فواتير البيع (Sales Invoices) -->
                 <a href="{{ route('admin.sales-invoices.index') }}" 
-                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition text-gray-300 hover:text-gray-100 hover:bg-slate-700/50">
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.sales-invoices.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
                     <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -246,7 +246,7 @@
 
                 <!-- فواتير الشراء (Purchase Invoices) -->
                 <a href="{{ route('admin.purchase-invoices.index') }}" 
-                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition text-gray-300 hover:text-gray-100 hover:bg-slate-700/50">
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.purchase-invoices.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
                     <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -255,14 +255,52 @@
                     <span class="font-medium">فواتير الشراء</span>
                 </a>
 
+                @if(auth()->user()->hasRole('admin'))
+                <!-- التقارير (Reports) Section -->
+                <div class="px-4 pt-6 pb-2">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">التقارير</p>
+                </div>
+
+                <!-- التقارير (Reports) -->
+                <a href="{{ route('admin.reports.index') }}" 
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.reports.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
+                    <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <span class="font-medium">التقارير</span>
+                </a>
+                @endif
+
                 <!-- الإعدادات (Settings) Section -->
                 <div class="px-4 pt-6 pb-2">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">النظام</p>
                 </div>
 
+                <!-- الإشعارات (Notifications) -->
+                <a href="{{ route('admin.notifications.index') }}" 
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.notifications.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }} relative">
+                    <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </div>
+                    <span class="font-medium">الإشعارات</span>
+                    @php
+                        $unreadCount = \App\Models\Notification::unreadCount();
+                    @endphp
+                    @if($unreadCount > 0)
+                        <span class="absolute right-2 top-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                            {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                        </span>
+                    @endif
+                </a>
+
+                @if(auth()->user()->hasRole('admin'))
                 <!-- الإعدادات (Settings) -->
                 <a href="{{ route('admin.settings') }}" 
-                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition text-gray-300 hover:text-gray-100 hover:bg-slate-700/50">
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.settings') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
                     <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -274,7 +312,7 @@
                 
                 <!-- المستخدمين (Users) -->
                 <a href="{{ route('admin.users.index') }}" 
-                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition text-gray-300 hover:text-gray-100 hover:bg-slate-700/50">
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.users.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
                     <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -282,6 +320,7 @@
                     </div>
                     <span class="font-medium">المستخدمين</span>
                 </a>
+                @endif
 
 
                     <div class="px-4 pt-6 pb-2">

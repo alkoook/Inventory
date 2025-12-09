@@ -51,10 +51,9 @@ class Edit extends Component
             'name' => 'required|min:3',
             'sku' => 'required|unique:products,sku,' . $this->productId,
             'category_id' => 'required|exists:categories,id',
-            'company_id' => 'required|exists:companies,id',
+            'company_id' => 'nullable|exists:companies,id',
             'purchase_price' => 'required|numeric|min:0',
             'sale_price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
             'reorder_level' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
@@ -77,19 +76,7 @@ class Edit extends Component
             $imagePath = $this->image->store('products', 'public');
         }
         
-        // Check if stock changed
-        if ($this->stock != $this->oldStock) {
-            $difference = $this->stock - $this->oldStock;
-            InventoryTransaction::createTransaction(
-                $product->id,
-                'adjustment',
-                abs($difference),
-                null,
-                null,
-                'تعديل المخزون يدوياً',
-                auth()->id()
-            );
-        }
+        // لا يمكن تعديل المخزون من هنا - المخزون يتم تعديله فقط عبر فواتير الشراء/البيع
 
         $product->update([
             'name' => $this->name,
@@ -98,7 +85,6 @@ class Edit extends Component
             'company_id' => $this->company_id,
             'purchase_price' => $this->purchase_price,
             'sale_price' => $this->sale_price,
-            'stock' => $this->stock,
             'reorder_level' => $this->reorder_level,
             'description' => $this->description,
             'image' => $imagePath,

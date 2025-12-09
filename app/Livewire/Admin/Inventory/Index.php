@@ -14,7 +14,7 @@ class Index extends Component
 
     public function render()
     {
-        $products = Product::query()
+        $products = Product::with(['category', 'company'])
             ->when($this->search, function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
                     ->orWhere('sku', 'like', '%' . $this->search . '%');
@@ -24,6 +24,6 @@ class Index extends Component
 
         return view('livewire.admin.inventory.index', [
             'products' => $products
-        ])->layout('components.layouts.admin');
+        ])->layout('components.layouts.admin', ['header' => 'المخزون']);
     }
 }

@@ -27,24 +27,26 @@ class Dashboard extends Component
             'pending_orders' => Cart::where('status', 'open')->count(),
         ];
 
-        // إحصائيات اليوم
-        $today = Carbon::today();
-        $todaySales = SalesInvoice::whereDate('invoice_date', $today)
-            ->orWhereDate('created_at', $today)
+        // إحصائيات الشهر الحالي
+        $monthStart = Carbon::now()->startOfMonth();
+        $monthEnd = Carbon::now()->endOfMonth();
+        
+        $monthSales = SalesInvoice::whereBetween('invoice_date', [$monthStart, $monthEnd])
+            ->orWhereBetween('created_at', [$monthStart, $monthEnd])
             ->sum('total_amount');
 
-        $todayPurchases = PurchaseInvoice::whereDate('invoice_date', $today)
-            ->orWhereDate('created_at', $today)
+        $monthPurchases = PurchaseInvoice::whereBetween('invoice_date', [$monthStart, $monthEnd])
+            ->orWhereBetween('created_at', [$monthStart, $monthEnd])
             ->sum('total_amount');
 
-        $todayProfit = $todaySales - $todayPurchases;
+        $monthProfit = $monthSales - $monthPurchases;
 
         // إحصائيات إجمالية
         $totalSales = SalesInvoice::sum('total_amount');
         $totalPurchases = PurchaseInvoice::sum('total_amount');
         $totalProfit = $totalSales - $totalPurchases;
 
-        $recentOrders = Cart::with(['customer', 'user', 'items'])
+        $recentOrders = Cart::with(['user', 'items'])
             ->where('status', 'open')
             ->latest()
             ->take(5)
@@ -53,9 +55,9 @@ class Dashboard extends Component
         return view('livewire.admin.dashboard', [
             'stats' => $stats,
             'recentOrders' => $recentOrders,
-            'todaySales' => $todaySales,
-            'todayPurchases' => $todayPurchases,
-            'todayProfit' => $todayProfit,
+            'monthSales' => $monthSales,
+            'monthPurchases' => $monthPurchases,
+            'monthProfit' => $monthProfit,
             'totalSales' => $totalSales,
             'totalPurchases' => $totalPurchases,
             'totalProfit' => $totalProfit,

@@ -1,6 +1,6 @@
 <div>
     <div class="max-w-4xl mx-auto">
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-xl p-6" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.1);">
+        <div class="bg-slate-800 rounded-2xl border border-slate-700/50 shadow-xl p-6" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
             <h2 class="text-xl font-bold mb-6 text-gray-100">تعديل المنتج</h2>
             
             <form wire:submit="save" class="space-y-4">
@@ -46,9 +46,9 @@
                         @error('category_id') <span class="text-red-400 text-xs">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-300">الشركة *</label>
+                        <label class="block mb-2 text-sm font-medium text-gray-300">الشركة</label>
                         <select wire:model="company_id" class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 rounded-xl p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
-                            <option value="">اختر...</option>
+                            <option value="">بدون شركة</option>
                             @foreach($companies as $comp)
                                 <option value="{{ $comp->id }}">{{ $comp->name }}</option>
                             @endforeach
@@ -66,9 +66,9 @@
                         @error('sale_price') <span class="text-red-400 text-xs">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-300">المخزون الأولي *</label>
-                        <input wire:model="stock" type="number" class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 placeholder-gray-400 rounded-xl p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
-                        @error('stock') <span class="text-red-400 text-xs">{{ $message }}</span> @enderror
+                        <label class="block mb-2 text-sm font-medium text-gray-300">المخزون الحالي (للقراءة فقط)</label>
+                        <input type="number" value="{{ $stock }}" readonly class="w-full bg-slate-700/30 border border-slate-600 text-gray-400 rounded-xl p-2.5 cursor-not-allowed">
+                        <p class="text-xs text-gray-500 mt-1">لا يمكن تعديل المخزون من هنا. استخدم فواتير الشراء/البيع لتعديل المخزون.</p>
                     </div>
                     <div>
                         <label class="block mb-2 text-sm font-medium text-gray-300">حد إعادة الطلب</label>
@@ -82,7 +82,7 @@
 
                 <div class="flex justify-end gap-3 pt-4 border-t border-slate-700/50">
                     <a href="{{ route('admin.products.index') }}" class="bg-slate-700/50 hover:bg-slate-700 text-gray-300 px-5 py-2.5 rounded-xl transition-colors">إلغاء</a>
-                    <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg" style="box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);">حفظ التعديلات</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg">حفظ التعديلات</button>
                 </div>
             </form>
         </div>

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('paid_amount', 15, 2)->default(0);
             $table->decimal('remaining_amount', 15, 2)->default(0);
             $table->enum('status', ['draft', 'pending_approval', 'approved', 'rejected'])->default('pending_approval');
+            $table->enum('currency', ['USD', 'SYP'])->default('USD');
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -2,7 +2,7 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="relative h-48 bg-blue-600 flex items-center justify-center overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800 opacity-90"></div>
+                <div class="absolute inset-0 bg-blue-600 opacity-90"></div>
                 <div class="relative z-10 text-center">
                     <h1 class="text-4xl font-bold text-white mb-2">من نحن</h1>
                     <p class="text-blue-100 text-lg">تعرف على قصتنا ورؤيتنا</p>

@@ -1,35 +1,25 @@
 <div class="max-w-4xl mx-auto bg-slate-800 rounded-2xl border border-slate-700/50 shadow-xl p-6" style="box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
 
-    <h2 class="text-xl font-bold text-gray-100 mb-6">إنشاء فاتورة مبيعات</h2>
+    <h2 class="text-xl font-bold text-gray-100 mb-6">تعديل فاتورة مشتريات</h2>
 
     <form wire:submit.prevent="save" class="space-y-6">
 
-        <!-- Customer + Date + Currency -->
+        <!-- Company + Date + Currency -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-            <!-- Customer -->
+            <!-- Company -->
             <div>
-                <label class="block mb-2 text-sm font-medium text-gray-300">الزبون *</label>
-
-                {{-- Search Input tied to customer_name --}}
-                <input 
-                    wire:model.live="customer_name"
-                    list="customers_list"
-                    placeholder="ابحث بالاسم…"
-                    class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 placeholder-gray-400 rounded-xl p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                <label class="block mb-2 text-sm font-medium text-gray-300">الشركة</label>
+                <select 
+                    wire:model="company_id" 
+                    class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 rounded-xl p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 >
-
-                <!-- Hidden input to hold the actual ID -->
-                <input type="hidden" wire:model="customer_id">
-
-                <datalist id="customers_list">
-                    {{-- Customers are loaded in the mount() method --}}
-                    @foreach($customers as $customer)
-                        <option value="{{ $customer->name }}" data-id="{{ $customer->id }}"></option>
+                    <option value="">بدون شركة</option>
+                    @foreach($companies as $company)
+                        <option value="{{ $company->id }}">{{ $company->name }}</option>
                     @endforeach
-                </datalist>
-
-                @error('customer_id')
+                </select>
+                @error('company_id')
                     <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span>
                 @enderror
             </div>
@@ -79,12 +69,10 @@
                     <input 
                         placeholder="ابحث بالاسم أو SKU"
                         list="products_list"
-                        {{-- .live.debounce.300ms is highly recommended for search inputs in Livewire --}}
                         wire:model.live.debounce.300ms="items.{{ $index }}.product_search"
                         class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 placeholder-gray-400 rounded-xl p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     >
 
-                    <!-- Hidden input to hold the actual product_id -->
                     <input type="hidden" wire:model="items.{{ $index }}.product_id">
 
                     @error("items.$index.product_id")
@@ -101,32 +89,30 @@
                     <label class="text-sm font-medium text-gray-300 mb-1 block">الكمية *</label>
                     <input 
                         wire:model.live="items.{{ $index }}.quantity"
-                        type="number" 
-                        min="1"
-                        max="{{ $item['product_id'] ? ($products->firstWhere('id', $item['product_id'])->stock ?? 0) : '' }}"
+                        type="number" min="1"
                         class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 rounded-xl p-2.5 text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     >
-                    @if($item['product_id'])
-                        @php
-                            $product = $products->firstWhere('id', $item['product_id']);
-                            $availableStock = $product ? $product->stock : 0;
-                        @endphp
-                        <p class="text-xs text-gray-400 mt-1">المتاح: {{ $availableStock }}</p>
-                    @endif
                     @error("items.$index.quantity")
                         <span class="text-red-400 text-xs block mt-1">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <!-- Unit of Measure (Readonly) -->
+                <!-- Unit of Measure -->
                 <div class="w-32">
                     <label class="text-sm font-medium text-gray-300 mb-1 block">وحدة القياس *</label>
-                    <input 
-                        type="text"
-                        value="{{ $item['unit_of_measure'] ?? 'قطعة' }}"
-                        readonly
-                        class="w-full bg-slate-700/30 border border-slate-600 text-gray-400 rounded-xl p-2.5 text-center cursor-not-allowed"
+                    <select 
+                        wire:model="items.{{ $index }}.unit_of_measure"
+                        class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 rounded-xl p-2.5 text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     >
+                        <option value="غرام">غرام</option>
+                        <option value="كيلو">كيلو</option>
+                        <option value="قطعة">قطعة</option>
+                        <option value="علبة">علبة</option>
+                        <option value="كيس">كيس</option>
+                        <option value="ظرف">ظرف</option>
+                        <option value="تنكة">تنكة</option>
+                        <option value="طرد">طرد</option>
+                    </select>
                     @error("items.$index.unit_of_measure")
                         <span class="text-red-400 text-xs block mt-1">{{ $message }}</span>
                     @enderror
@@ -146,7 +132,7 @@
                     @enderror
                 </div>
                 
-                <!-- Subtotal (Added for better UX) -->
+                <!-- Subtotal -->
                 @php
                     $subtotal = ($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0);
                 @endphp
@@ -180,9 +166,8 @@
 
         </div>
 
-        <!-- Products list (datalist definition) -->
+        <!-- Products list -->
         <datalist id="products_list">
-            {{-- Products are loaded in the mount() method --}}
             @foreach($products as $product)
                 <option 
                     value="{{ $product->name }} — {{ $product->sku }}" 
@@ -199,7 +184,6 @@
             </div>
         </div>
 
-
         <!-- Notes -->
         <div>
             <label class="block mb-2 text-sm font-medium text-gray-300">ملاحظات</label>
@@ -213,7 +197,7 @@
         <!-- Actions -->
         <div class="flex justify-end gap-3 pt-4 border-t border-slate-700/50">
             <a 
-                href="{{ route('admin.sales-invoices.index') }}"
+                href="{{ route('admin.purchase-invoices.index') }}"
                 class="bg-slate-700/50 hover:bg-slate-700 px-5 py-2.5 rounded-xl text-gray-300 transition duration-150"
             >
                 إلغاء
@@ -224,10 +208,11 @@
                 class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition duration-150 font-semibold shadow-lg"
                 wire:loading.attr="disabled"
             >
-                <span wire:loading.remove wire:target="save">حفظ الفاتورة</span>
+                <span wire:loading.remove wire:target="save">حفظ التعديلات</span>
                 <span wire:loading wire:target="save">جاري الحفظ...</span>
             </button>
         </div>
 
     </form>
-</div
+</div>
+

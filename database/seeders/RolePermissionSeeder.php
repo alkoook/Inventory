@@ -54,12 +54,24 @@ class RolePermissionSeeder extends Seeder
 
         // 2) إنشاء الأدوار
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $managerRole = Role::firstOrCreate(['name' => 'manager', 'guard_name' => 'web']);
         $customerRole = Role::firstOrCreate(['name' => 'customer', 'guard_name' => 'web']);
 
         // 3) إعطاء كل الصلاحيات للـ admin (سوبر أدمن)
         $adminRole->givePermissionTo(Permission::all());
 
-        // 4) إعطاء صلاحيات الزبون
+        // 4) إعطاء صلاحيات المدير (manager) - تحت الادمن
+        $managerPermissions = [
+            'manage invoices',
+            'manage sales invoices',
+            'manage purchase invoices',
+            'manage products',
+            'manage categories',
+            'manage companies',
+        ];
+        $managerRole->givePermissionTo($managerPermissions);
+
+        // 5) إعطاء صلاحيات الزبون
         $customerPermissions = [
             'view products',
             'view catalog',
@@ -69,7 +81,7 @@ class RolePermissionSeeder extends Seeder
         ];
         $customerRole->givePermissionTo($customerPermissions);
 
-        // 5) إنشاء مستخدم أدمن وربطه بالرول (اختياري بس مفيد)
+        // 6) إنشاء مستخدم أدمن وربطه بالرول (اختياري بس مفيد)
         $admin = User::firstOrCreate(
             ['email' => 'admin@admin.com'],
             [

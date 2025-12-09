@@ -42,14 +42,14 @@ class Create extends Component
         'name' => 'required|min:3',
         'sku' => 'required|unique:products,sku',
         'category_id' => 'required|exists:categories,id',
-        'company_id' => 'required|exists:companies,id',
+        'company_id' => 'nullable|exists:companies,id',
         'purchase_price' => 'required|numeric|min:0',
         'sale_price' => 'required|numeric|min:0',
         'stock' => 'required|integer|min:0',
         'reorder_level' => 'nullable|integer|min:0',
         'description' => 'nullable|string',
         'image' => 'nullable|image|max:2048',
-        'unit_of_measure' => 'required|in:غرام,كيلو,قطعة,علبة,كيس,ظرف,تنكة',
+        'unit_of_measure' => 'required|in:غرام,كيلو,قطعة,علبة,كيس,ظرف,تنكة,طرد',
     ];
 
     public function save()
@@ -64,7 +64,7 @@ class Create extends Component
                     $imagePath = $this->image->store('products', 'public');
                 }
 
-                // 2. إنشاء المنتج
+                // 2. إنشاء المنتج بدون مخزون أولي (سيتم إضافته عبر transaction)
                 $product = Product::create([
                     'name' => $this->name,
                     'sku' => $this->sku,
@@ -72,7 +72,7 @@ class Create extends Component
                     'company_id' => $this->company_id,
                     'purchase_price' => $this->purchase_price,
                     'sale_price' => $this->sale_price,
-                    'stock' => $this->stock,
+                    'stock' => 0, // بدء من صفر، سيتم تحديثه عبر transaction
                     'reorder_level' => $this->reorder_level,
                     'description' => $this->description,
                     'image' => $imagePath,
@@ -80,7 +80,7 @@ class Create extends Component
                 ]);
 
                 // 3. إذا كان هناك مخزون أولي، إنشاء فاتورة شراء تلقائياً
-                if ($this->stock > 0) {
+                if ($this->stock > 0 && $this->company_id) {
                     // إنشاء فاتورة الشراء
                     $invoice = PurchaseInvoice::create([
                         'company_id' => $this->company_id,
@@ -100,7 +100,7 @@ class Create extends Component
                         'total_price' => $this->stock * $this->purchase_price,
                     ]);
 
-                    // إنشاء معاملة المخزون
+                    // إنشاء معاملة المخزون (ستضيف الكمية تلقائياً)
                     InventoryTransaction::createTransaction(
                         $product->id,
                         'purchase',
@@ -108,6 +108,17 @@ class Create extends Component
                         'App\Models\PurchaseInvoice',
                         $invoice->id,
                         'شراء - فاتورة تلقائية: '.$invoice->invoice_number
+                    );
+                } elseif ($this->stock > 0 && !$this->company_id) {
+                    // إذا كان هناك مخزون أولي بدون شركة، إنشاء معاملة adjustment مباشرة
+                    InventoryTransaction::createTransaction(
+                        $product->id,
+                        'adjustment',
+                        $this->stock,
+                        null,
+                        null,
+                        'مخزون أولي - منتج بدون شركة: '.$this->name,
+                        auth()->id()
                     );
                 }
             });

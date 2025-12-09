@@ -25,8 +25,8 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Redirect root to client home
-Route::get('/', \App\Livewire\Client\Home::class)->name('home');
+// Redirect root to client home - requires authentication
+Route::get('/', \App\Livewire\Client\Home::class)->name('home')->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
@@ -91,11 +91,13 @@ Route::prefix('admin')
         Route::get('/sales-invoices', \App\Livewire\Admin\SalesInvoices\Index::class)->name('sales-invoices.index');
         Route::get('/sales-invoices/create', \App\Livewire\Admin\SalesInvoices\Create::class)->name('sales-invoices.create');
         Route::get('/sales-invoices/{id}', \App\Livewire\Admin\SalesInvoices\View::class)->name('sales-invoices.view');
+        Route::get('/sales-invoices/{id}/edit', \App\Livewire\Admin\SalesInvoices\Edit::class)->name('sales-invoices.edit');
 
         // Purchase Invoices
         Route::get('/purchase-invoices', \App\Livewire\Admin\PurchaseInvoices\Index::class)->name('purchase-invoices.index');
         Route::get('/purchase-invoices/create', \App\Livewire\Admin\PurchaseInvoices\Create::class)->name('purchase-invoices.create');
         Route::get('/purchase-invoices/{id}', \App\Livewire\Admin\PurchaseInvoices\View::class)->name('purchase-invoices.view');
+        Route::get('/purchase-invoices/{id}/edit', \App\Livewire\Admin\PurchaseInvoices\Edit::class)->name('purchase-invoices.edit');
 
         // ============================================
         // System Management
@@ -105,6 +107,12 @@ Route::prefix('admin')
         Route::get('/users', \App\Livewire\Admin\Users\Index::class)->name('users.index');
         Route::get('/users/create', \App\Livewire\Admin\Users\Create::class)->name('users.create');
         Route::get('/users/{id}/edit', \App\Livewire\Admin\Users\Edit::class)->name('users.edit');
+
+        // Notifications
+        Route::get('/notifications', \App\Livewire\Admin\Notifications\Index::class)->name('notifications.index');
+
+        // Reports
+        Route::get('/reports', \App\Livewire\Admin\Reports\Index::class)->name('reports.index');
 
         // Settings
         Route::get('/settings', Settings::class)->name('settings');
@@ -127,7 +135,7 @@ Route::prefix('admin')
 */
 Route::prefix('client')
     ->name('client.')
-    ->middleware(['web'])
+    ->middleware('auth')
     ->group(function () {
 
         // Main browsing pages
@@ -146,4 +154,13 @@ Route::prefix('client')
         // Information pages
         Route::get('/about', AboutUs::class)->name('about-us');
         Route::get('/contact', ContactUs::class)->name('contact-us');
+
+        // Logout
+        Route::post('/logout', function () {
+            auth()->logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+
+            return redirect()->route('login');
+        })->name('logout');
     });
