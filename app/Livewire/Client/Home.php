@@ -15,11 +15,13 @@ use Livewire\Component;
 class Home extends Component
 {
     public array $quantities = [];
+    
+    public $search = '';
 
     public function mount()
     {
         // Initialize quantities for all products
-        $products = Product::where('is_active', true)->latest()->take(12)->get();
+        $products = Product::where('is_active', true)->latest()->take(24)->get();
         foreach ($products as $product) {
             $this->quantities[$product->id] = 1;
         }
@@ -121,9 +123,13 @@ class Home extends Component
             ->get();
 
         $latestProducts = Product::where('is_active', true)
+            ->when($this->search, function ($query) {
+                $query->where('name', 'like', '%' . $this->search . '%')
+                      ->orWhere('sku', 'like', '%' . $this->search . '%');
+            })
             ->with(['category', 'company'])
             ->latest()
-            ->take(12)
+            ->take(24)
             ->get();
 
         return view('livewire.client.home', [

@@ -18,6 +18,22 @@ class Index extends Component
         $notification->markAsRead();
     }
 
+    public function viewOrder($notificationId)
+    {
+        $notification = Notification::with('cart')->findOrFail($notificationId);
+        
+        if ($notification->cart_id && $notification->cart) {
+            // Mark as read when viewing
+            if (!$notification->is_read) {
+                $notification->markAsRead();
+            }
+            
+            return redirect()->route('admin.orders.view', $notification->cart->id);
+        }
+        
+        session()->flash('error', 'الطلب غير موجود');
+    }
+
     public function markAllAsRead()
     {
         Notification::where('is_read', false)->update(['is_read' => true]);
@@ -80,7 +96,7 @@ class Index extends Component
 
     public function render()
     {
-        $query = Notification::with('product')
+        $query = Notification::with(['product', 'cart'])
             ->orderBy('created_at', 'desc');
 
         if ($this->filter === 'unread') {

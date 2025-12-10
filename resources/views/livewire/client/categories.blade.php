@@ -10,85 +10,34 @@
             </p>
         </div>
 
-        <!-- Categories Carousel with Navigation -->
-        <div x-data="{
-            currentIndex: 0,
-            itemsPerView: 4,
-            categories: @js($categories->toArray()),
-            get maxIndex() {
-                return Math.max(0, this.categories.length - this.itemsPerView);
-            },
-            next() {
-                if (this.currentIndex < this.maxIndex) {
-                    this.currentIndex++;
-                } else {
-                    this.currentIndex = 0;
-                }
-            },
-            prev() {
-                if (this.currentIndex > 0) {
-                    this.currentIndex--;
-                } else {
-                    this.currentIndex = this.maxIndex;
-                }
-            },
-            init() {
-                setInterval(() => {
-                    this.next();
-                }, 4000);
-            }
-        }" class="relative">
-            <!-- Navigation Buttons -->
-            <button @click="prev()" 
-                    class="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 backdrop-blur-sm border-2 border-red-300 text-red-700 p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 hover:bg-red-50 hover:border-red-400 hover:text-red-600 transition-all duration-300 transform-3d">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </button>
-            <button @click="next()" 
-                    class="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 backdrop-blur-sm border-2 border-red-300 text-red-700 p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 hover:bg-red-50 hover:border-red-400 hover:text-red-600 transition-all duration-300 transform-3d">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                </svg>
-            </button>
-
-            <!-- Categories Container -->
-            <div class="overflow-hidden px-12">
-                <div class="flex transition-transform duration-500 ease-in-out" 
-                     :style="'transform: translateX(-' + (currentIndex * (100 / itemsPerView)) + '%)'">
-                    @foreach($categories as $index => $category)
-                        <div class="min-w-[25%] px-3 flex-shrink-0">
-                            <a href="{{ route('client.catalog') }}?cat={{ $category->id }}" 
-                               class="group block card-3d" wire:ignore>
-                                <div class="bg-white rounded-2xl shadow-md border-2 border-slate-200 hover:border-indigo-400 hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 overflow-hidden flex flex-col items-center p-6 text-center">
-                                    <!-- Image or Icon -->
-                                    @if($category->image)
-                                        <div class="w-24 h-24 mb-4 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:rotate-3 group-hover:scale-110">
-                                            <img src="{{ asset('storage/' . $category->image) }}" 
-                                                 alt="{{ $category->name }}"
-                                                 class="w-full h-full object-cover">
-                                        </div>
-                                    @else
-                                        <div class="w-24 h-24 bg-blue-600 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:rotate-3 group-hover:scale-110 group">
-                                            <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                                            </svg>
-                                        </div>
-                                    @endif
-                                    
-                                    <h3 class="text-lg font-bold text-slate-800 mb-2 group-hover:text-indigo-600 transition-colors">
-                                        {{ $category->name }}
-                                    </h3>
-                                    
-                                    <span class="text-sm text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
-                                        {{ $category->products_count ?? 0 }} منتج
-                                    </span>
-                                </div>
-                            </a>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
+        <!-- Categories Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            @foreach($categories as $category)
+                <a href="{{ route('client.catalog') }}?cat={{ $category->id }}" 
+                   class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 hover:border-red-300 flex flex-col transform hover:-translate-y-1">
+                    <div class="aspect-square bg-gray-100 overflow-hidden flex items-center justify-center">
+                        @if($category->image)
+                            <img src="{{ asset('storage/' . $category->image) }}" 
+                                 alt="{{ $category->name }}"
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        @else
+                            <div class="w-20 h-20 bg-red-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                </svg>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="text-base font-bold text-gray-900 group-hover:text-red-600 transition-colors mb-1">
+                            {{ $category->name }}
+                        </h3>
+                        <span class="text-xs text-gray-500">
+                            {{ $category->products_count ?? 0 }} منتج
+                        </span>
+                    </div>
+                </a>
+            @endforeach
         </div>
     </div>
 </div>

@@ -19,9 +19,6 @@
                     class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 placeholder-gray-400 rounded-xl p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 >
 
-                <!-- Hidden input to hold the actual ID -->
-                <input type="hidden" wire:model="customer_id">
-
                 <datalist id="customers_list">
                     {{-- Customers are loaded in the mount() method --}}
                     @foreach($customers as $customer)
@@ -29,7 +26,7 @@
                     @endforeach
                 </datalist>
 
-                @error('customer_id')
+                @error('customer_user_id')
                     <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span>
                 @enderror
             </div>
@@ -55,7 +52,6 @@
                     class="w-full bg-slate-700/50 border border-slate-600 text-gray-100 rounded-xl p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 >
                     <option value="USD">دولار أمريكي (USD)</option>
-                    <option value="SYP">ليرة سورية (SYP)</option>
                 </select>
                 @error('currency')
                     <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span>
@@ -132,9 +128,26 @@
                     @enderror
                 </div>
 
-                <!-- Unit Price -->
+                <!-- Purchase Price (Display Only) -->
+                @if($item['product_id'])
+                    @php
+                        $product = $products->firstWhere('id', $item['product_id']);
+                        $purchasePrice = $product ? $product->purchase_price : 0;
+                    @endphp
+                    <div class="w-32">
+                        <label class="text-sm font-medium text-gray-300 mb-1 block">سعر الشراء</label>
+                        <input 
+                            type="number" 
+                            value="{{ number_format($purchasePrice, 2) }}"
+                            readonly
+                            class="w-full bg-slate-700/30 border border-slate-600 text-gray-400 rounded-xl p-2.5 text-center cursor-not-allowed"
+                        >
+                    </div>
+                @endif
+
+                <!-- Unit Price (Sale Price) -->
                 <div class="w-32">
-                    <label class="text-sm font-medium text-gray-300 mb-1 block">السعر *</label>
+                    <label class="text-sm font-medium text-gray-300 mb-1 block">سعر البيع *</label>
                     <input 
                         wire:model.live="items.{{ $index }}.unit_price"
                         type="number" min="0" step="0.01"

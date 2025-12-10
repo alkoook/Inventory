@@ -60,7 +60,7 @@
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </div>
             </div>
-            <p class="mt-4 text-3xl font-extrabold text-green-400">{{ number_format($totalSales ?? 0, 2) }} ر.س</p>
+            <p class="mt-4 text-3xl font-extrabold text-green-400">{{ number_format($totalSales ?? 0, 2) }} USD</p>
             <p class="text-xs text-gray-400 mt-1">إجمالي فواتير البيع</p>
         </div>
 
@@ -72,7 +72,7 @@
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                 </div>
             </div>
-            <p class="mt-4 text-3xl font-extrabold text-red-400">{{ number_format($totalPurchases ?? 0, 2) }} ر.س</p>
+            <p class="mt-4 text-3xl font-extrabold text-red-400">{{ number_format($totalPurchases ?? 0, 2) }} USD</p>
             <p class="text-xs text-gray-400 mt-1">إجمالي فواتير الشراء</p>
         </div>
 
@@ -84,7 +84,7 @@
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                 </div>
             </div>
-            <p class="mt-4 text-3xl font-extrabold {{ ($totalProfit ?? 0) >= 0 ? 'text-green-400' : 'text-red-400' }}">{{ number_format($totalProfit ?? 0, 2) }} ر.س</p>
+            <p class="mt-4 text-3xl font-extrabold {{ ($totalProfit ?? 0) >= 0 ? 'text-green-400' : 'text-red-400' }}">{{ number_format($totalProfit ?? 0, 2) }} USD</p>
             <p class="text-xs text-gray-400 mt-1">{{ ($totalProfit ?? 0) >= 0 ? 'ربح إجمالي' : 'خسارة إجمالية' }}</p>
         </div>
     </div>
@@ -99,7 +99,7 @@
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 </div>
             </div>
-            <p class="mt-4 text-2xl font-extrabold text-green-400">{{ number_format($monthSales ?? 0, 2) }} ر.س</p>
+            <p class="mt-4 text-2xl font-extrabold text-green-400">{{ number_format($monthSales ?? 0, 2) }} USD</p>
             <p class="text-xs text-gray-400 mt-1">فواتير البيع هذا الشهر</p>
         </div>
 
@@ -111,7 +111,7 @@
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 </div>
             </div>
-            <p class="mt-4 text-2xl font-extrabold text-red-400">{{ number_format($monthPurchases ?? 0, 2) }} ر.س</p>
+            <p class="mt-4 text-2xl font-extrabold text-red-400">{{ number_format($monthPurchases ?? 0, 2) }} USD</p>
             <p class="text-xs text-gray-400 mt-1">فواتير الشراء هذا الشهر</p>
         </div>
 
@@ -127,7 +127,7 @@
                     @endif
                 </div>
             </div>
-            <p class="mt-4 text-2xl font-extrabold {{ ($monthProfit ?? 0) >= 0 ? 'text-green-400' : 'text-red-400' }}">{{ number_format($monthProfit ?? 0, 2) }} ر.س</p>
+            <p class="mt-4 text-2xl font-extrabold {{ ($monthProfit ?? 0) >= 0 ? 'text-green-400' : 'text-red-400' }}">{{ number_format($monthProfit ?? 0, 2) }} USD</p>
             <p class="text-xs {{ ($monthProfit ?? 0) >= 0 ? 'text-green-400' : 'text-red-400' }} mt-1 font-semibold">
                 {{ ($monthProfit ?? 0) >= 0 ? 'أنت رابح هذا الشهر' : 'أنت خاسر هذا الشهر' }}
             </p>

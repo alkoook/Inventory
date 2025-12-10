@@ -8,12 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'متجر المخزون' }}</title>
-    <!-- تم إزالة تضمينات vite/livewire لغرض العرض في بيئة Immersive، ولكن يجب إعادتها في ملفك الأصلي -->
-    <!-- @vite(['resources/css/app.css', 'resources/js/app.js']) -->
-    <!-- @livewireStyles -->
-
-    <!-- استخدام Tailwind CDN وتحسينات جمالية (ألوان مبهجة) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {

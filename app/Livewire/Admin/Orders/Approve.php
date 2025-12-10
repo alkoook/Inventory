@@ -40,6 +40,8 @@ class Approve extends Component
             $invoice = SalesInvoice::create([
                 'user_id' => auth()->id(),
                 'customer_user_id' => $cart->user_id,
+                'worker_id' => $cart->worker_id, // استخدام worker_id من cart
+                'cart_id' => $cart->id,
                 'invoice_number' => 'SINV-' . now()->format('YmdHis') . '-' . $cart->id,
                 'invoice_date' => now(),
                 'total_amount' => $cart->total_amount,

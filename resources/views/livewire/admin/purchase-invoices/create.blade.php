@@ -119,9 +119,22 @@
                     @enderror
                 </div>
 
-                <!-- Unit Price -->
+                <!-- Old Sale Price (Display Only) -->
+                @if($item['product_id'])
+                    <div class="w-32">
+                        <label class="text-sm font-medium text-gray-300 mb-1 block">سعر البيع القديم</label>
+                        <input 
+                            type="number" 
+                            value="{{ number_format($item['old_sale_price'] ?? 0, 2) }}"
+                            readonly
+                            class="w-full bg-slate-700/30 border border-slate-600 text-gray-400 rounded-xl p-2.5 text-center cursor-not-allowed"
+                        >
+                    </div>
+                @endif
+
+                <!-- Unit Price (Purchase Price) -->
                 <div class="w-32">
-                    <label class="text-sm font-medium text-gray-300 mb-1 block">السعر *</label>
+                    <label class="text-sm font-medium text-gray-300 mb-1 block">سعر الشراء *</label>
                     <input 
                         wire:model.live="items.{{ $index }}.unit_price"
                         type="number" min="0" step="0.01"

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Observers\CartObserver;
 
 class Cart extends Model
 {
@@ -18,6 +19,7 @@ class Cart extends Model
         'approved_by',
         'approved_at',
         'rejected_reason',
+        'worker_id',
     ];
 
     protected $casts = [
@@ -42,8 +44,21 @@ class Cart extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
+    public function worker()
+    {
+        return $this->belongsTo(User::class, 'worker_id');
+    }
+
     public function order()
     {
         return $this->hasOne(Order::class);
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::observe(CartObserver::class);
     }
 }

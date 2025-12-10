@@ -38,19 +38,22 @@ class Create extends Component
 
     public $unit_of_measure = 'قطعة';
 
-    protected $rules = [
-        'name' => 'required|min:3',
-        'sku' => 'required|unique:products,sku',
-        'category_id' => 'required|exists:categories,id',
-        'company_id' => 'nullable|exists:companies,id',
-        'purchase_price' => 'required|numeric|min:0',
-        'sale_price' => 'required|numeric|min:0',
-        'stock' => 'required|integer|min:0',
-        'reorder_level' => 'nullable|integer|min:0',
-        'description' => 'nullable|string',
-        'image' => 'nullable|image|max:2048',
-        'unit_of_measure' => 'required|in:غرام,كيلو,قطعة,علبة,كيس,ظرف,تنكة,طرد',
-    ];
+    protected function rules()
+    {
+        return [
+            'name' => 'required|min:3',
+            'sku' => 'required|unique:products,sku',
+            'category_id' => 'required|exists:categories,id',
+            'company_id' => 'nullable|exists:companies,id',
+            'purchase_price' => 'required|numeric|min:0',
+            'sale_price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'reorder_level' => 'nullable|integer|min:0',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|max:10240',
+            'unit_of_measure' => 'required|in:غرام,كيلو,قطعة,علبة,كيس,ظرف,تنكة,طرد',
+        ];
+    }
 
     public function save()
     {
@@ -77,6 +80,7 @@ class Create extends Component
                     'description' => $this->description,
                     'image' => $imagePath,
                     'unit_of_measure' => $this->unit_of_measure,
+                    'is_active' => true,
                 ]);
 
                 // 3. إذا كان هناك مخزون أولي، إنشاء فاتورة شراء تلقائياً

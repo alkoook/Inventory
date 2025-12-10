@@ -16,7 +16,7 @@ use Livewire\Component;
 class Create extends Component
 {
     // === 1. خصائص بيانات الفاتورة الأساسية ===
-    public $user_id;
+    public $customer_user_id; // الزبون الذي اشترى
 
     public $customer_name; // يُستخدم للبحث عبر datalist
 
@@ -50,9 +50,9 @@ class Create extends Component
         // تهيئة التاريخ الافتراضي
         $this->invoice_date = Carbon::today()->toDateString();
 
-        // جلب قائمة العملاء والمنتجات الأولية (للعرض في datalist)
+        // جلب قائمة العملاء (customers فقط) والمنتجات الأولية (للعرض في datalist)
         // يجب أن يحتوي Product على سعر التكلفة (cost_price)
-        $this->customers = User::select('id', 'name')->get();
+        $this->customers = User::role('customer')->select('id', 'name')->get();
         $this->products = Product::select('id', 'name', 'sku', 'sale_price', 'purchase_price')->get(); // تم إضافة cost_price
 
         // إضافة صنف افتراضي واحد عند التحميل
@@ -62,9 +62,9 @@ class Create extends Component
     protected function rules()
     {
         return [
-            'user_id' => 'required|exists:users,id',
+            'customer_user_id' => 'required|exists:users,id',
             'invoice_date' => 'required|date',
-            'currency' => 'required|in:USD,SYP',
+            'currency' => 'required|in:USD',
             'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
@@ -83,7 +83,7 @@ class Create extends Component
         // 1. تحديد Customer ID من Customer Name
         if ($property === 'customer_name') {
             $customer = $this->customers->firstWhere('name', $value);
-            $this->user_id = $customer ? $customer->id : null;
+            $this->customer_user_id = $customer ? $customer->id : null;
         }
 
         // 2. تحديث Total Amount و Cost Amount عند تغيير الكمية أو السعر
@@ -124,6 +124,8 @@ class Create extends Component
                 $this->items[$index]['product_id'] = $product->id;
                 // تحديث سعر الوحدة تلقائياً من سعر البيع للمنتج
                 $this->items[$index]['unit_price'] = $product->sale_price;
+                // تحديث سعر الشراء للعرض فقط (لا يتم حفظه)
+                $this->items[$index]['purchase_price'] = $product->purchase_price ?? 0;
                 // تحديث سعر التكلفة للحسابات
                 $this->items[$index]['cost_price'] = $product->purchase_price ?? 0;
                 // تعيين وحدة القياس من المنتج
@@ -131,6 +133,7 @@ class Create extends Component
                 $this->calculateTotal();
             } else {
                 $this->items[$index]['product_id'] = null;
+                $this->items[$index]['purchase_price'] = 0;
                 $this->items[$index]['cost_price'] = 0;
             }
         }
@@ -168,7 +171,7 @@ class Create extends Component
             'quantity' => 1,
             'unit_of_measure' => 'قطعة',
             'unit_price' => 0.00,
-            'purchase_price' => 0.00,
+            'purchase_price' => 0.00, // For display only
         ];
         $this->calculateTotal();
     }
@@ -211,7 +214,8 @@ class Create extends Component
             DB::transaction(function () {
                 // 1. إنشاء الفاتورة الرئيسية
                 $invoice = SalesInvoice::create([
-                    'user_id' => $this->user_id,
+                    'user_id' => auth()->id(), // المستخدم الذي ينشئ الفاتورة (admin/manager)
+                    'customer_user_id' => $this->customer_user_id, // الزبون الذي اشترى
                     'invoice_date' => $this->invoice_date,
                     'invoice_number' => 'INV_'.now()->format('YmdHis'),
                     'total_amount' => $this->total_amount,

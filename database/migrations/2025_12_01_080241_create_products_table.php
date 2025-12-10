@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreignId('company_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('company_id')->nullable()->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->string('name');
             $table->string('sku')->unique();
             $table->text('description')->nullable();
             $table->string('image')->nullable();
-            $table->enum('unit_of_measure', ['غرام', 'كيلو', 'قطعة', 'علبة', 'كيس', 'ظرف', 'تنكة'])->default('قطعة');
+            $table->enum('unit_of_measure', ['غرام', 'كيلو', 'قطعة', 'علبة', 'كيس', 'ظرف', 'تنكة', 'طرد'])->default('قطعة');
             $table->decimal('purchase_price', 15, 2);
             $table->decimal('sale_price', 15, 2);
             $table->integer('stock')->default(0);

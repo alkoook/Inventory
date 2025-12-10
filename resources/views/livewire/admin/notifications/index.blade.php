@@ -74,7 +74,14 @@
                                         @endif
                                     </h3>
                                     <p class="text-sm text-gray-400 mt-1">{{ $notification->message }}</p>
-                                    @if($notification->product)
+                                    @if($notification->type === 'new_order' && $notification->cart_id)
+                                        <button 
+                                            wire:click="viewOrder({{ $notification->id }})"
+                                            class="text-blue-400 hover:text-blue-300 text-sm mt-2 inline-block transition-colors"
+                                        >
+                                            عرض الطلب →
+                                        </button>
+                                    @elseif($notification->product)
                                         <a href="{{ route('admin.products.edit', $notification->product->id) }}" class="text-blue-400 hover:text-blue-300 text-sm mt-2 inline-block">
                                             عرض المنتج →
                                         </a>

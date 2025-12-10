@@ -56,7 +56,7 @@ class Edit extends Component
             'sale_price' => 'required|numeric|min:0',
             'reorder_level' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:10240',
         ];
     }
 

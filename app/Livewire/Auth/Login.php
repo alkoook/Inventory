@@ -10,6 +10,7 @@ use Livewire\Component;
 class Login extends Component
 {
     public $email = '';
+
     public $password = '';
 
     protected $rules = [
@@ -37,6 +38,14 @@ class Login extends Component
             // باستخدام Spatie Roles
             if ($user->hasRole('admin')) {
                 return redirect()->route('admin.dashboard');
+            }
+
+            if ($user->hasRole('manager')) {
+                return redirect()->route('admin.sales-invoices.create');
+            }
+
+            if ($user->hasRole('worker')) {
+                return redirect()->route('admin.workers.my-invoices');
             }
 
             if ($user->hasRole('customer')) {

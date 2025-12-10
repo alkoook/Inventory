@@ -39,7 +39,7 @@ class Create extends Component
     public function mount()
     {
         $this->invoice_date = now()->format('Y-m-d');
-        $this->products = Product::select('id', 'name', 'sku', 'purchase_price')->get();
+        $this->products = Product::select('id', 'name', 'sku', 'purchase_price', 'sale_price')->get();
         $this->addItem();
         $this->calculateTotal();
     }
@@ -52,6 +52,7 @@ class Create extends Component
             'quantity' => 1,
             'unit_of_measure' => 'قطعة',
             'unit_price' => 0.00,
+            'old_sale_price' => 0.00, // For display only
         ];
         $this->calculateTotal();
     }
@@ -87,9 +88,12 @@ class Create extends Component
                 $this->items[$index]['product_id'] = $product->id;
                 // تحديث سعر الوحدة تلقائياً من سعر الشراء للمنتج
                 $this->items[$index]['unit_price'] = $product->purchase_price;
+                // حفظ سعر البيع القديم للعرض فقط
+                $this->items[$index]['old_sale_price'] = $product->sale_price ?? 0;
                 $this->calculateTotal();
             } else {
                 $this->items[$index]['product_id'] = null;
+                $this->items[$index]['old_sale_price'] = 0;
             }
         }
     }

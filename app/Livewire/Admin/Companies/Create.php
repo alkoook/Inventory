@@ -25,7 +25,7 @@ class Create extends Component
         'email' => 'nullable|email',
         'address' => 'nullable|string',
         'is_active' => 'boolean',
-        'image' => 'nullable|image|max:2048',
+        'image' => 'nullable|image|max:10240',
     ];
 
     protected $messages = [

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('customer_user_id')->nullable()->constrained('users')->nullOnDelete()->comment('User with role customer');
+            $table->foreignId('worker_id')->nullable()->constrained('users')->nullOnDelete()->comment('Assigned worker');
+            $table->unsignedBigInteger('cart_id')->nullable()->comment('Source cart/order');
             $table->string('invoice_number')->unique();
             $table->date('invoice_date')->nullable();
             $table->decimal('total_amount', 15, 2)->default(0);

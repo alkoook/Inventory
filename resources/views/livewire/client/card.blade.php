@@ -99,8 +99,8 @@
 
                                     <!-- Price -->
                                     <div class="text-left">
-                                        <p class="text-xs text-slate-500 mb-1">{{ number_format($item->unit_price, 0) }} ر.س / وحدة</p>
-                                        <p class="font-bold text-lg text-blue-600">{{ number_format($item->total_price, 0) }} ر.س</p>
+                                        <p class="text-xs text-slate-500 mb-1">{{ number_format($item->unit_price, 0) }} USD / وحدة</p>
+                                        <p class="font-bold text-lg text-blue-600">{{ number_format($item->total_price, 0) }} USD</p>
                                     </div>
                                 </div>
                             </div>
@@ -125,7 +125,7 @@
                             <div class="border-t border-slate-200 pt-3 mt-3">
                                 <div class="flex justify-between items-center font-bold text-lg text-slate-900">
                                     <span>الإجمالي</span>
-                                    <span class="text-blue-600">{{ number_format($cart->total_amount, 0) }} ر.س</span>
+                                    <span class="text-blue-600">{{ number_format($cart->total_amount, 0) }} USD</span>
                                 </div>
                             </div>
                         </div>

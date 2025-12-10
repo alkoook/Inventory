@@ -23,7 +23,7 @@
                         <tr class="hover:bg-slate-700/30 transition-colors">
                             <td class="px-6 py-4 font-medium text-gray-100">{{ $order->user->name ?? '-' }}</td>
                             <td class="px-6 py-4 text-gray-400">{{ $order->created_at->format('Y-m-d H:i') }}</td>
-                            <td class="px-6 py-4 font-semibold text-green-400">{{ number_format($order->total_amount, 0) }} ر.س</td>
+                            <td class="px-6 py-4 font-semibold text-green-400">{{ number_format($order->total_amount, 0) }} USD</td>
                             <td class="px-6 py-4">
                                 <a href="{{ route('admin.orders.view', $order->id) }}" class="text-blue-400 hover:text-blue-300 transition-colors">عرض التفاصيل</a>
                             </td>

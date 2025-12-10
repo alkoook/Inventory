@@ -19,7 +19,7 @@
                         <div class="flex-1">
                             <input wire:model="image" type="file" accept="image/*" class="w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer bg-slate-700/50 border border-slate-600 rounded-xl p-2.5">
                             @error('image') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
-                            <p class="text-xs text-gray-400 mt-2">الحجم الأقصى: 2MB</p>
+                            <p class="text-xs text-gray-400 mt-2">الحجم الأقصى: 10MB</p>
                         </div>
                     </div>
                 </div>

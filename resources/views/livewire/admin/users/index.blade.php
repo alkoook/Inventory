@@ -64,17 +64,27 @@
                                 {{ $user->email }}
                             </td>
 
-                            <!-- Role from Spatie -->
-                            <td class="px-6 py-4">
-                                @php
-                                    $role = $user->getRoleNames()->first();
-                                @endphp
+                         <!-- Role from Spatie -->
+<td class="px-6 py-4">
+    @php
+        $role = $user->getRoleNames()->first();
 
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                    {{ $role === 'admin' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50' : 'bg-slate-700/50 text-gray-400 border border-slate-600/50' }}" style="{{ $role === 'admin' ? 'box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);' : '' }}">
-                                    {{ $role ?? '—' }}
-                                </span>
-                            </td>
+        $roleClasses = [
+            'admin' => 'bg-blue-500/20 text-blue-400 border border-blue-500/50',
+            'manager' => 'bg-green-500/20 text-green-400 border border-green-500/50',
+            'customer' => 'bg-purple-500/20 text-purple-400 border border-purple-500/50',
+            'worker' => 'bg-yellow-500/20 text-yellow-500 border border-yellow-600/50',
+        ];
+
+        $defaultClass = 'bg-slate-700/50 text-gray-400 border border-slate-600/50';
+    @endphp
+
+    <div class="inline-block px-3 py-1 rounded-xl text-sm font-medium border {{ isset($role) && isset($roleClasses[$role]) ? $roleClasses[$role] : $defaultClass }}"
+         style="{{ $role === 'admin' ? 'box-shadow: 0 0 10px rgba(59,130,246,0.2);' : '' }}">
+        {{ $role ? ucfirst($role) : 'بدون دور' }}
+    </div>
+</td>
+
 
                             <!-- Created At -->
                             <td class="px-6 py-4 text-gray-400">

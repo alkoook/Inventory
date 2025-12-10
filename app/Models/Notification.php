@@ -14,6 +14,7 @@ class Notification extends Model
         'title',
         'message',
         'product_id',
+        'cart_id',
         'is_read',
     ];
 
@@ -24,6 +25,11 @@ class Notification extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function cart()
+    {
+        return $this->belongsTo(Cart::class);
     }
 
     /**

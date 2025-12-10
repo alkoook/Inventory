@@ -15,18 +15,37 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('login');
         }
 
-        if (!auth()->user()->hasRole('admin')) {
-            // Redirect customer to client pages
-            if (auth()->user()->hasRole('customer')) {
-                return redirect()->route('client.catalog');
+        $user = auth()->user();
+
+        // If user is manager, block access to restricted routes
+        if ($user->hasRole('manager')) {
+            $restrictedRoutes = [
+                'admin.reports.index',
+                'admin.users.index',
+                'admin.users.create',
+                'admin.users.edit',
+                'admin.settings',
+            ];
+
+            if (in_array($request->route()->getName(), $restrictedRoutes)) {
+                abort(403, 'غير مصرح لك بالوصول إلى هذه الصفحة');
             }
-            abort(403, 'غير مصرح لك بالوصول إلى هذه الصفحة');
         }
 
-        return $next($request);
+        // Allow admin, manager, and worker to access admin panel
+        if ($user->hasRole('admin') || $user->hasRole('manager') || $user->hasRole('worker')) {
+            return $next($request);
+        }
+
+        // Redirect customer to client pages
+        if ($user->hasRole('customer')) {
+            return redirect()->route('client.catalog');
+        }
+
+        abort(403, 'غير مصرح لك بالوصول إلى هذه الصفحة');
     }
 }

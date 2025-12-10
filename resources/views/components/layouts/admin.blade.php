@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم</title>
 
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 
     {{-- TomSelect CSS --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css">
 
-    @stack('styles')>
+    @stack('styles')
     
     <style>
         {{--  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');  --}}
@@ -128,23 +129,10 @@
 
         <!-- Sidebar (RTL: fixed right) -->
         <aside id="sidebar" class="fixed right-0 top-0 h-screen w-72 p-0 smooth-transition">
-            <!-- Logo Area - Dark Theme -->
-            <div class="p-6 border-b border-slate-700/50 flex justify-center">
-                    <div class="flex items-center gap-3">
-                    <div class="logo-icon w-12 h-12 rounded-2xl bg-blue-600 shadow-lg flex items-center justify-center text-white smooth-transition overflow-hidden">
-                        @if(file_exists(public_path('logo.png')))
-                            <img src="{{ asset('logo.png') }}" alt="Logo" class="w-full h-full object-cover">
-                        @else
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                            </svg>
-                        @endif
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-gray-100">لوحة التحكم</h1>
-                        <p class="text-xs text-gray-400">نظام إدارة المخزون</p>
-                    </div>
-                </div>
+            <!-- Header Area - Dark Theme -->
+            <div class="p-6 border-b border-slate-700/50">
+                <h1 class="text-xl font-bold text-gray-100">لوحة التحكم</h1>
+                <p class="text-xs text-gray-400">نظام إدارة المخزون</p>
             </div>
 
             <!-- Navigation Menu -->
@@ -154,6 +142,7 @@
                     I am using static '#' links instead of Blade routes.
                 -->
 
+                @if(!auth()->user()->hasRole('worker'))
                 @if(auth()->user()->hasRole('admin'))
                 <!-- الرئيسية (Dashboard) -->
                 <a href="{{ route('admin.dashboard') }}" 
@@ -255,6 +244,18 @@
                     <span class="font-medium">فواتير الشراء</span>
                 </a>
 
+                <!-- العاملين (Workers) -->
+                <a href="{{ route('admin.workers.index') }}" 
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.workers.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
+                    <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <span class="font-medium">العاملين</span>
+                </a>
+                @endif
+
                 @if(auth()->user()->hasRole('admin'))
                 <!-- التقارير (Reports) Section -->
                 <div class="px-4 pt-6 pb-2">
@@ -273,6 +274,7 @@
                 </a>
                 @endif
 
+                @if(!auth()->user()->hasRole('worker'))
                 <!-- الإعدادات (Settings) Section -->
                 <div class="px-4 pt-6 pb-2">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">النظام</p>
@@ -281,7 +283,7 @@
                 <!-- الإشعارات (Notifications) -->
                 <a href="{{ route('admin.notifications.index') }}" 
                    class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.notifications.*') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }} relative">
-                    <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
+                    <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20 relative">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
@@ -296,6 +298,7 @@
                         </span>
                     @endif
                 </a>
+                @endif
 
                 @if(auth()->user()->hasRole('admin'))
                 <!-- الإعدادات (Settings) -->
@@ -319,6 +322,19 @@
                         </svg>
                     </div>
                     <span class="font-medium">المستخدمين</span>
+                </a>
+                @endif
+
+                @if(auth()->user()->hasRole('worker'))
+                <!-- فواتيري (My Invoices) -->
+                <a href="{{ route('admin.workers.my-invoices') }}" 
+                   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl smooth-transition {{ request()->routeIs('admin.workers.my-invoices') ? 'active-link text-blue-400 font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-slate-700/50' }}">
+                    <div class="p-2 rounded-lg bg-slate-700/50 text-blue-400 group-hover:bg-blue-500/20">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <span class="font-medium">فواتيري</span>
                 </a>
                 @endif
 
@@ -459,66 +475,41 @@
         
     </script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    {{-- Tailwind CSS v4 is configured in resources/css/app.css --}}
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        // Using 'Cairo' as per the style block below for Arabic support
-                        sans: ['Cairo', 'Inter', 'Tahoma', 'Arial', 'sans-serif'],
-                    },
-                    colors: {
-                        // Dark theme poetic colors: Black, Blue, Red
-                        'primary': {
-                            50: '#0f172a', // Dark slate base
-                            100: '#1e293b', // Slate 800
-                            600: '#3b82f6', // Blue 500 - main accent
-                            700: '#2563eb', // Blue 600 - active state
-                            900: '#1e293b', // Deep slate
-                        },
-                        'accent': '#3b82f6', // Electric Blue for highlights
-                        'danger': '#ef4444', // Red 500 for warnings/errors
-                        'dark-text': '#e2e8f0', // Light slate for text
-                    }
-                }
-            }
-        }
-
         function initTomSelects() {
-    document.querySelectorAll('.product-select').forEach((el) => {
-        if (!el.tomselect) {
-            let index = el.dataset.index;
+            document.querySelectorAll('.product-select').forEach((el) => {
+                if (!el.tomselect) {
+                    let index = el.dataset.index;
 
-            let ts = new TomSelect(el, {
-                placeholder: "ابحث عن منتج...",
-                maxItems: 1,
-                allowEmptyOption: true,
+                    let ts = new TomSelect(el, {
+                        placeholder: "ابحث عن منتج...",
+                        maxItems: 1,
+                        allowEmptyOption: true,
+                    });
+
+                    ts.on('change', function(value) {
+                        Livewire.dispatch('update-product', { 
+                            index: index, 
+                            product_id: value 
+                        });
+                    });
+                }
             });
 
-            ts.on('change', function(value) {
-                Livewire.dispatch('update-product', { 
-                    index: index, 
-                    product_id: value 
-                });
+            document.querySelectorAll('.customer-select').forEach((el) => {
+                if (!el.tomselect) {
+                    new TomSelect(el, {
+                        placeholder: "اختر زبون...",
+                        maxItems: 1,
+                        allowEmptyOption: true,
+                    });
+                }
             });
         }
-    });
 
-    document.querySelectorAll('.customer-select').forEach((el) => {
-        if (!el.tomselect) {
-            new TomSelect(el, {
-                placeholder: "اختر زبون...",
-                maxItems: 1,
-                allowEmptyOption: true,
-            });
-        }
-    });
-}
-
-document.addEventListener('livewire:load', initTomSelects);
-document.addEventListener('livewire:update', initTomSelects);
-
+        document.addEventListener('livewire:load', initTomSelects);
+        document.addEventListener('livewire:update', initTomSelects);
     </script>
 
 </body>

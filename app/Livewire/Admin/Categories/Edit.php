@@ -34,7 +34,7 @@ class Edit extends Component
             'name' => 'required|min:3|unique:categories,name,' . $this->categoryId,
             'description' => 'nullable|string',
             'is_active' => 'boolean',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:10240',
         ];
     }
 
